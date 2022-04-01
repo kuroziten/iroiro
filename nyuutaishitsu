@@ -1,0 +1,148 @@
+
+window.setInterval(function () {
+    unchi();
+}, 5000);
+
+function unchi() {
+    /* 部屋名を取得 */
+    const roomName = "寂しい！！！！！！！！！！！！";
+    /* ユーザ名を取得 */
+    const userName = "黒護辞典";
+    const userSetName = "黒護辞典二世";
+    /* HTML消す(画面描画処理なくせばちょっと処理速度速くなるんじゃね的な) */
+    document.getElementsByTagName("html").innerHTML = "";
+
+    /* 入室時のform */
+    const form = document.createElement('form');
+    form.action = 'http://drrrkari.com/room/';
+    form.method = 'post';
+    const q2 = document.createElement('input');
+    q2.value = 'login';
+    q2.name = 'login';
+    const q1 = document.createElement('input');
+    q1.name = 'id';
+    
+    /* cookieの削除(削除後、一定時間経過で接続が切れる) */
+    $.cookie('durarara-like-chat1',"",{path:"/",expires:-1});
+    $.cookie('profile',"",{path:"/",expires:-1});
+    $.cookie('OX_plg',"",{path:"/",expires:-1});
+    $.cookie('_gid',"",{path:"/",expires:-1});
+    $.cookie('cto_bundle',"",{path:"/",expires:-1});
+    $.cookie('_im_vid',"",{path:"/",expires:-1});
+    $.cookie('_ga',"",{path:"/",expires:-1});
+
+    /* ログアウト */
+    $.ajax('http://drrrkari.com/logout/',
+      {
+        type: 'post'
+      }
+    )
+    .done(function(data) {
+
+        /* ログアウト後画面のHTMLを取得 */
+        const html = data;
+        /* ログアウト後画面を使用するためdiv要素に格納 */
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        /* ログアウト後画面を見えなくする。その方が処理速度速くなりそうな気がした。 */
+        // div.style.display = "none";
+        /* HTMLにログアウト後画面を格納 */
+        document.getElementsByTagName("html")[0].appendChild(div);
+
+        /* ログイン用トークンの存在確認(ログインするときにサーバのトークン情報と一致しないとログインできないぽい) */
+        const tokenLast = document.getElementsByName("token").length - 1;
+
+        /* トークンが存在する場合 */
+        if (tokenLast >= 0) {
+            /* トークンを取得 */
+            const token = document.getElementsByName("token")[tokenLast].value;
+            /* HTMLはもういらないから消しておく */
+            document.getElementsByTagName("html")[0].innerHTML = "";
+
+            /* トークン情報を使ってトップ画面にログイン */
+            $.ajax('http://drrrkari.com/',
+              {
+                type: 'post',
+                data: {name : userSetName, login : "login", language : "ja-JP", icon : "girl", token : token}
+              }
+            )
+            .done(function(data2) {
+                /* トップ画面のHTMLを取得 */
+                const html2 = data2;
+                /* トップ画面のHTMLをdiv要素に格納 */
+                const div2 = document.createElement("div");
+                div2.innerHTML = html2;
+                /*トップ画面を見えなくする*/
+                div2.style.display = "none";
+                /* トップ画面をHTMLに格納 */
+                document.getElementsByTagName("html")[0].appendChild(div2);
+                /* 部屋名とユーザ名をもとに部屋のIDを特定する */
+                const roomId = getRoomId(roomName, userName);
+            
+                q1.value = roomId;
+                form.appendChild(q1);
+                form.appendChild(q2);
+                document.body.appendChild(form);
+                /* 部屋のIDをもとに入室 */
+//                form.submit();
+                
+                /* 部屋のIDをもとに入室 */
+                $.ajax('http://drrrkari.com/room/',
+                  {
+                    type: 'post',
+                    data: {id : roomId, login : "login"}
+                  }
+                )
+                .done(function(data2) {
+
+                    setTimeout(function () {
+                        setTimeout(function () {
+                            $.post('http://drrrkari.com/room/?ajax=1',Object.assign({ valid: 1 }, {message:"僕がいる"}));
+                            /* 部屋を退室 */
+                            $.ajax('http://drrrkari.com/room/',
+                              {
+                                type: 'post',
+                                data: {logout : "退室", post : "POST!"}
+                              }
+                            )
+                            .done(function(data3) {
+                                // console.log(data3);
+                            });
+    
+                        }, 1500);
+                    },1500);
+
+                });
+                
+            });
+        } else {
+            console.log("tokenが取得出来ませんでした。");
+        }
+    });
+}
+
+/** ルームID取得処理 */
+function getRoomId (roomName, userName) {
+    /* トップ画面のnameの要素を全て取得(部屋名) */
+    const names = document.getElementsByClassName("name");
+
+    /* nameの要素分ループ */
+    for (i = 0; i < names.length; i++) {
+        /* name要素を取得 */
+        const name = names[i];
+        /* name要素の部屋名と探してる部屋名が一致した場合 */
+        if (name.innerHTML == roomName)　{
+            /* 入室してる人のリストを取得 */
+            const next = name.nextElementSibling;
+            const nextAll = next.innerHTML.replace(/\s+/g, "");
+            /* 入室している人のリストに探してるユーザ名が存在する場合 */
+            if ( nextAll.indexOf('>' + userName + '<') != -1) {
+                /* その部屋のルームIDを返却 */
+                // console.log("room id :" + next.nextElementSibling.nextElementSibling.getElementsByTagName("input")[0].value);
+                return next.nextElementSibling.nextElementSibling.getElementsByTagName("input")[0].value;
+            }            
+        }
+    }
+    /* 基本ここには到達しない想定 */
+    return null;
+}
