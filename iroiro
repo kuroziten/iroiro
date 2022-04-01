@@ -1,0 +1,124 @@
+const n = 10;
+(function aaa(h, m){
+    let hours;
+    let nextMins;
+
+    if (h != null && h != undefined && h != NaN) {
+        hours = h;
+        nextMins = m;
+    } else {
+        const now = new Date();
+        hours = now.getHours();
+        let mins = now.getMinutes();
+        nextMins = 0;
+        for (i = 60; i >= 0; i-=n) {
+            if (mins + 1 > i) {
+                console.log("mins:" + mins + ", i:" + i);
+                nextMins = i + n;
+                if (nextMins >= 60) {
+                    nextMins = nextMins - 60;
+                    hours++;
+                }
+                break;
+            }
+        }
+    }
+    console.log("hours : " + hours + ", nextMins : " + nextMins);
+    let nextTime = new Date().setHours(hours, nextMins, 0, 0) - new Date();
+    if (nextTime < 0) {
+        nextTime = 0;
+    }
+    console.log((nextTime / 1000 / 60) + " 分後 (" + nextTime + ")");
+    
+    window.setTimeout(function () {
+        let now2　= new Date();
+        if (now2.getMinutes() == nextMins) {
+            const str = 
+                "時報です！__"
+                + (now2.getFullYear() + 2000)
+                + "-" + k((now2.getMonth()+1), 2)
+                + "-" + k(now2.getDate(), 2)
+                + " " + k(now2.getHours(), 2)
+                + ":" + k(now2.getMinutes(), 2)
+                + ":" + k(now2.getSeconds(), 2)
+                + "." + k(now2.getMilliseconds(), 3);
+            let tt = document.getElementsByTagName("textarea")[0];
+            const bk = tt.value;
+            tt.value = str;
+            document.getElementsByName("post")[1].click();
+            tt.value = bk;
+            console.log(str);
+            aaa(null, null);
+        } else {
+            console.log("ここ大丈夫かな...");
+            aaa(hours, nextMins);
+        }
+    }, nextTime);
+})();
+/** n : 値, kn : 期待桁数 **/
+function k (n, kn) {
+    for (i = 1; i <= kn; i++) {
+        if (String(n).length < kn) {
+            console.log("add 0");
+            n = "0" + n;
+        }
+    }
+    return n;
+}
+
+
+let src = document.getElementsByClassName("userprof")[0].getElementsByTagName("img")[0].getAttribute("src");
+let src2 = src.indexOf("icon_") + 5;
+let myIcon = src.substring(src2).replace(".png","");
+let myName = document.getElementsByClassName("profname")[0].innerText;
+//document.getElementsByClassName("body")[0].classList.add("comp");
+//document.getElementsByClassName("system")[0].classList.add("comp2");
+let lastMessage = "";
+/*
+window.setInterval(function action () {
+    for (let i = 0; i < document.getElementsByClassName("body").length; i++) {
+        if (document.getElementsByClassName("body")[i]　 == document.getElementsByClassName("comp")[0] && i > 0) {
+            const body = document.getElementsByClassName("body")[i - 1];
+            body.classList.add("comp");
+            const name = body.parentNode.parentNode.previousElementSibling.innerText;
+            const icon = body.parentNode.parentNode.parentNode.classList[1];
+            const message = body.innerText;
+            if (myIcon == icon && myName == name) {
+                lastMessage = message;
+                action();
+            } else {
+                if (message != lastMessage) {
+                    console.log(message);
+                    const bk = document.getElementsByTagName("textarea")[0].value;
+                    document.getElementsByTagName("textarea")[0].value = message;
+                    document.getElementsByName("post")[1].click();
+                    document.getElementsByTagName("textarea")[0].value = bk;
+                }
+            }
+            break;
+        }
+    }
+}, 500);
+*/
+/*
+window.setInterval(function () {
+    for (let i = 0; i < document.getElementsByClassName("system").length; i++) {
+        if (document.getElementsByClassName("system")[i]　 == document.getElementsByClassName("comp2")[0] && i > 0) {
+            const system = document.getElementsByClassName("system")[i - 1];
+            system.classList.add("comp2");
+
+            // 末尾から2文字を取得
+            var b = system.innerText.slice(-6) == "入室しました";
+            
+            const bk = document.getElementsByTagName("textarea")[0].value;
+            // lastMessage = document.getElementsByTagName("textarea")[0].value = 
+            //    b 
+            //    ? lastMessage != "こん！！！" ? "こん！！！" : "こん！！！！"
+            //    : lastMessage != "おつ！！！" ? "おつ！！！" : "おつ！！！！";
+            // document.getElementsByName("post")[1].click();
+            // document.getElementsByTagName("textarea")[0].value = bk;
+            break;
+        }
+    }
+}, 500);
+*/
