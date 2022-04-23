@@ -1,0 +1,23 @@
+let clone = document.getElementsByName("logout")[0].cloneNode(true);
+clone.onclick = () => nigeru();
+clone.type = "button";
+clone.style.position = "fixed";
+let cloneParent = document.getElementsByClassName("logout")[0];
+cloneParent.append(clone);
+document.getElementsByName("logout")[0].remove();
+
+function nigeru () {
+    console.log("start");
+    const top = rndm(1, 10);
+    console.log(top);
+    const left = rndm(60, 98);
+    console.log(left);
+    clone.style.top = top + "%";
+    clone.style.left = left + "%";
+}
+function rndm(min, max) {
+    var min = min;
+    var max = max;
+    var a = Math.floor( Math.random() * (max + 1 - min) ) + min ;
+    return a;
+}
