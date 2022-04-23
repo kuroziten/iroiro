@@ -1,5 +1,5 @@
 let clone = document.getElementsByName("logout")[0].cloneNode(true);
-clone.onclick = () => nigeru();
+clone.addEventListener("mouseover",() => nigeru ());
 clone.type = "button";
 clone.style.position = "fixed";
 let cloneParent = document.getElementsByClassName("logout")[0];
