@@ -1,0 +1,11 @@
+let d = 0;
+window.setInterval(function () {
+  const e = document.getElementsByClassName("userprof")[0].getElementsByTagName("img")[0];
+  d = d + 10;
+  e.style.transform = "rotate(" + d + "deg)";
+    let e2 = document.getElementsByTagName("dt");
+    for (let i = 0; i < e2.length; i++) {
+        e2[i].style.transform = "rotate(" + d + "deg)";
+    }
+}, 10);
+
