@@ -1,0 +1,26 @@
+setInterval(()=>{
+    d=document;
+    for (e1 of d.querySelectorAll(".body")){
+        str = e1.innerText;
+        if (
+                str.indexOf('.jpg') >= 0
+                || str.indexOf('.png') >= 0
+        ) {
+            dd=e1.parentNode.parentNode;
+            cr=(e)=>d.createElement(e);
+            p=cr("p");
+            a=cr("a");
+            img=cr("img");
+            ap=(a,b)=>a.append(b);
+            ap(a,img);
+            ap(p,a);
+            dd.innerHTML="";
+            ap(dd,p);
+            img.src=str;
+            img.style="max-width:200px;max-height:200px";
+            a.href=str;
+            a.target="_blank";
+            p.style="margin-left:30px";
+        }
+    }
+},500)
