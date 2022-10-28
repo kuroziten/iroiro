@@ -1,0 +1,20 @@
+setInterval(function () {
+    var img_path = document.getElementById("img_path").cloneNode();
+    // console.log(img_path);
+    var iframe = document.createElement("iframe");
+    iframe.src="/";
+    iframe.style.width="100vw";
+    iframe.style.height="50vw";
+    iframe.style.translate="0 200px";
+    iframe.style.display="none";
+    document.body.prepend(iframe);
+    setTimeout(function () {
+        d = iframe.contentWindow.document;
+        d.querySelector("#img_path").remove();
+        d.querySelector("#upimgform").append(img_path);
+        d.querySelector("input[name='upimg']").click();
+        setTimeout(function () {
+            iframe.remove();        
+        }, 1000);
+    }, 1500)
+}, 3000);undefined;
