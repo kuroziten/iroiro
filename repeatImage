@@ -1,0 +1,110 @@
+a = document.getElementById("inputAAA") == undefined;
+if (a) {
+    input = document.createElement("input");
+    input.type = "file";
+    input.setAttribute("id", "inputAAA");
+    input.name = "img_path";
+    document.body.append(input);
+}
+if (!a) {
+
+    setInterval(()=>{
+
+    
+        var iframe = document.createElement("iframe");
+        iframe.style.display="none";
+        iframe.src = "/";
+        iframe.style.width = "80vw";
+        iframe.style.height = "100vh";
+        document.body.append(iframe);
+        setTimeout(()=>{
+            console.log("test1");
+            d = iframe.contentWindow.document;
+            d.getElementsByName("icon")[0].value = "bm";
+            d.getElementById("name").value = "黒護辞典";
+            d.loginForm.submit();
+            // setTimeout(()=>{d.remove();},100);
+            console.log("test1END");
+    
+            var iframe2 = document.createElement("iframe");
+            iframe2.style.display="none";
+            iframe2.src = "/lounge";
+            iframe2.style.width = "70vw";
+            iframe2.style.height = "100vh";
+            document.body.append(iframe2);
+            // iframe3_src = "";
+            setTimeout(()=>{
+                console.log("test2");
+                d2 = iframe2.contentWindow.document;
+                console.log(d2.getElementsByTagName("iframe")[0].src);
+                console.log(d2.getElementById("zatsu").querySelectorAll("input[name='id']"));
+                for (id of d2.getElementById("zatsu").querySelectorAll("input[name='id']")) {
+                    if (id.value == "815899b9321f140b08306ff316d53e6e") {
+                        console.log(id);
+                        console.log(id.parentNode.getElementsByTagName("button"));
+                        id.parentNode.getElementsByTagName("button")[0].click();
+                    }
+                }
+                console.log("test2END");
+    
+                var iframe3 = document.createElement("iframe");
+                iframe3.style.display="none";
+                iframe3.src = "/room";
+                iframe3.style.width = "60vw";
+                iframe3.style.height = "100vh";
+                document.body.append(iframe3);
+                setTimeout(()=>{
+                    console.log("test3");
+    
+    
+    
+                    // 画像要素のクローンを作成
+                    var img_path = document.getElementById("inputAAA").cloneNode();
+                    // iframeの中身を取得
+                    d3 = iframe3.contentWindow.document;
+                    // もともとあった画像要素を削除
+                    d3.querySelector("#img_path").remove();
+                    // そこに画像要素のクローンを差し替え
+                    d3.querySelector("#upimgform").append(img_path);
+                    // 画像送信ボタンをクリック
+                    d3.querySelector("input[name='upimg']").click();
+                    setTimeout(function () {
+
+                        setTimeout(()=>{
+                            var cookies = document.cookie;
+                            var cookiesArray = cookies.split(';');
+                            var now = new Date();
+                            now.setYear(now.getYear() - 1);
+                            for(var c of cookiesArray){
+                                console.log(c);
+                                var cArray = c.split('=');
+                                document.cookie = cArray[0] + '=;max-age=0'
+                                document.cookie = cArray[0] + '=;expires=' + now.toGMTString();
+                            }
+                        }, 200);
+
+                        // iframeの削除
+                        iframe3.remove();
+                        iframe2.remove();
+                        iframe.remove();
+                        
+                    }, 1100);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                    
+                    console.log("test3END");
+                },200);
+            },200);
+        },200);
+    }, 2100);
+}
+
+
