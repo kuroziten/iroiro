@@ -1,13 +1,13 @@
 setInterval(()=>{
     for (li of document.getElementById("user_list").getElementsByTagName("li")) {
-
+        var jj = (name,param) => name.indexOf(param) != -1;
         var name = li.innerText;
         var j = (
-            (name.indexOf('s') != -1 || name.indexOf('S') != -1)
+            (jj(name, "s") || jj(name, "S"))
             &&
-            (name.indexOf('e') != -1 || name.indexOf('E') != -1)
+            (jj(name, "e") || jj(name, "E"))
             &&
-            (name.indexOf('x') != -1 || name.indexOf('X') != -1)
+            (jj(name, "x") || jj(name, "X"))
         );
         if (j) {
             console.log(li.getAttribute("name"));
@@ -15,7 +15,6 @@ setInterval(()=>{
         }
     }
 },250);
-
 function ban (name) {
     $.post("https://drrrkari.com/room/?ajax=1", {'ban_user': name},
     function(result) {
