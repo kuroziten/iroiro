@@ -1,0 +1,24 @@
+setInterval(()=>{
+    for (li of document.getElementById("user_list").getElementsByTagName("li")) {
+
+        var name = li.innerText;
+        var j = (
+            (name.indexOf('s') != -1 || name.indexOf('S') != -1)
+            &&
+            (name.indexOf('e') != -1 || name.indexOf('E') != -1)
+            &&
+            (name.indexOf('x') != -1 || name.indexOf('X') != -1)
+        );
+        if (j) {
+            console.log(li.getAttribute("name"));
+            ban(li.getAttribute("name"));
+        }
+    }
+},250);
+
+function ban (name) {
+    $.post("https://drrrkari.com/room/?ajax=1", {'ban_user': name},
+    function(result) {
+      toggleSettingPannel();
+    });    
+}
