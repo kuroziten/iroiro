@@ -1,0 +1,65 @@
+hello();
+function hello() {
+    var lastId = document.getElementsByClassName("talk")[0].getAttribute("id");
+    console.log(lastId);
+    setInterval(()=>{
+        var iframe = document.createElement("iframe");
+        iframe.src = "/";
+        iframe.style.display = "none";
+        document.body.append(iframe);
+        setTimeout(()=>{
+            var d = iframe.contentWindow.document;
+            var talks = document.getElementById("talks");
+            var a =
+                talks.getElementsByClassName("talk")[0].getAttribute("id") +
+                talks.getElementsByClassName("talk")[1].getAttribute("id") +
+                talks.getElementsByClassName("talk")[2].getAttribute("id") ;
+            // console.log(a)
+            var talks2 = d.getElementById("talks");
+            var b =
+                talks2.getElementsByClassName("talk")[0].getAttribute("id") +
+                talks2.getElementsByClassName("talk")[1].getAttribute("id") +
+                talks2.getElementsByClassName("talk")[2].getAttribute("id") ;
+            // console.log(b)
+            if (a != b) {
+                talks.innerHTML = d.getElementById("talks").innerHTML
+            }
+            func(d);
+            iframe.remove();
+        },250);
+    }, 250);
+    function func (d) {
+        var talks = d.getElementsByClassName("talk");
+        for (i = 0; i < talks.length; i++) {
+            if (talks[i].getAttribute("id") == lastId) {
+                if (i > 0) {
+                    lastId = talks[i - 1].getAttribute("id");
+                    // console.log(talks[i - 1].getAttribute("id"));
+                    // console.log(talks[i - 1].innerText.slice(-5))
+                    if (talks[i - 1].classList.contains("system")) {
+                        var txt = talks[i - 1].innerText;
+                        var usrName = txt.slice(3, txt.length - 9);
+                        if (txt.slice(-6) == "入室しました") {
+                            console.log(usrName + "さんの入室を検知");
+                            postMsg(usrName + "さんいらっしゃい！自動挨拶作ったよ！褒めて！！！");
+                        } else if (txt.slice(-6) == "退室しました") {
+                            console.log(usrName + "さんの退室を検知");
+                            postMsg(usrName + "さんまたね！！！");
+                        }
+                    }
+                    func();
+                }
+                return;
+            }
+        }
+        
+    }
+    function postMsg (msg) {
+        $.post("https://drrrkari.com/room/?ajax=1", "message=" + msg + "&valid=1",
+          function(result) {
+            isSubmitting = false;
+            buttonElement.val("POST!");
+          }
+        );    
+    }    
+}
