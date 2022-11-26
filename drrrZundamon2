@@ -1,0 +1,32 @@
+let lastText = "";
+lastText = document.getElementsByClassName("body")[0].innerText;
+
+await setInterval(async function () {
+    if (lastText != document.getElementsByClassName("body")[0].innerText) {
+        lastText = document.getElementsByClassName("body")[0].innerText;
+        aa(lastText);
+    }
+},500);
+
+async function aa(lastText) {
+    var msg = lastText;
+    const data = new FormData();
+    data.set('text', msg);
+    const post = await fetch(
+        "https://naughty-davinci.153-122-198-71.plesk.page/z/post",
+        {
+            method: 'POST',
+            body: data
+        }
+    );
+    const postText = await post.text();
+    console.log(postText);
+    if (postText == "") {
+        setTimeout(()=>{aa(lastText)}, 500)
+    } else {
+        console.log(postText);
+        setTimeout(()=>{
+            new Audio("https://naughty-davinci.153-122-198-71.plesk.page/" + postText).play();
+        }, 1000);
+    }
+}
