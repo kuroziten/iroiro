@@ -4,6 +4,7 @@ lastText = document.getElementsByClassName("body")[0].innerText;
 await setInterval(async function () {
     if (lastText != document.getElementsByClassName("body")[0].innerText) {
         lastText = document.getElementsByClassName("body")[0].innerText;
+        // console.log(`POST : ${lastText}`);
         aa(lastText);
     }
 },500);
@@ -20,13 +21,22 @@ async function aa(lastText) {
         }
     );
     const postText = await post.text();
-    console.log(postText);
     if (postText == "") {
         setTimeout(()=>{aa(lastText)}, 500)
     } else {
-        console.log(postText);
-        setTimeout(()=>{
-            new Audio("https://naughty-davinci.153-122-198-71.plesk.page/" + postText).play();
-        }, 1000);
+        var playObj;
+        var audio = new Audio();
+        audio.src = "https://naughty-davinci.153-122-198-71.plesk.page/streams/" + postText;
+        playObj = audio.play();
+        if (playObj) {
+            playObj.then(() => {
+                setTimeout(() => {
+                    audio.play();
+                }, audio.duration * 1000);
+            }).catch((e) => {
+                // console.log(`りとらい:${lastText}`);
+                aa(lastText);
+            });
+        }
     }
 }
