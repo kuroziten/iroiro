@@ -38,7 +38,7 @@ def login():
     ## 入室
     info = {
         "login":"login",
-        "id":"4c8d323fdd22a89172d220ca453f66e5",
+        "id": room_id,
     }
     res = session.post("https://drrrkari.com/room/", data=info, cookies=cookie, headers=header)
 
