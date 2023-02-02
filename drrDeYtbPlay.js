@@ -1,5 +1,18 @@
-const videoId = 'taixhqpjvK4';
+let url = 'https://www.youtube.com/watch?v=C8WU__KYRSw';
 {
+    const getYtbId = (url) => {
+        let id = null;
+        if (url.indexOf("?v=") != -1) {
+            id = url.substr(url.indexOf("?v=") + 3, 11);
+        } else if (url.indexOf(".be/") != -1) {
+            id = url.substr(url.indexOf(".be/") + 4, 11);
+        } else {
+            id = url;
+        }
+        return id;
+    }
+    let ytbId = getYtbId(url);
+
     const div = document.createElement("div");
     console.log(div);
     document.body.append(div);
@@ -35,7 +48,7 @@ const videoId = 'taixhqpjvK4';
         player = new YT.Player(
             'player'
             ,{
-                videoId: videoId
+                videoId: ytbId
             },{
                 'playsinline': 1
             }
@@ -89,12 +102,29 @@ const videoId = 'taixhqpjvK4';
             	method: 'POST',
             	body: fd
         	})
-            
         }
     );
 
     const upimg = document.getElementsByClassName("upimg")[0];
     upimg.style.display = "none";
+
+    const ytbChange = document.createElement("li");
+    menu.prepend(ytbChange);
+    ytbChange.style.textDecoration = "underline";
+    ytbChange.style.color = "skyblue";
+    ytbChange.innerText = "背景動画変更";
+    ytbChange.addEventListener(
+        "click",
+        function () {
+            const url_ = window.prompt("ユーチューブのURLを入力して下さい。", "");
+            if (url_ != undefined && url_ != null && url_ != "") {
+                url = url_;
+                ytbId = getYtbId(url);
+                player.cueVideoById({videoId: ytbId});
+                player.playVideo();
+            }
+        }
+    )
     
     const ytbZButton = document.createElement("li");
     menu.prepend(ytbZButton);
@@ -110,5 +140,5 @@ const videoId = 'taixhqpjvK4';
                 div.style.zIndex = "-1";
             }
         }
-    );    
+    );
 };
