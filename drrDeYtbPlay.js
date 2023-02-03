@@ -1,4 +1,4 @@
-let url = 'https://www.youtube.com/watch?v=C8WU__KYRSw';
+let url = 'https://www.youtube.com/watch?v=utPEH5Y0fnU';
 {
     const getYtbId = (url) => {
         let id = null;
@@ -116,12 +116,11 @@ let url = 'https://www.youtube.com/watch?v=C8WU__KYRSw';
     ytbChange.addEventListener(
         "click",
         function () {
-            const url_ = window.prompt("ユーチューブのURLを入力して下さい。", "");
+            const url_ = window.prompt("ユーチューブのURLを入力して下さい。", url);
             if (url_ != undefined && url_ != null && url_ != "") {
                 url = url_;
                 ytbId = getYtbId(url);
                 player.cueVideoById({videoId: ytbId});
-                player.playVideo();
             }
         }
     )
