@@ -3,7 +3,7 @@ const message = `おっぱいぺろぺろにゃり`
 
 // メッセージ送信処理
 fetch(
-    "/room/?ajax=1#",
+    "?ajax=1#",
     {
         method: 'POST', 
         body: setFormData({
@@ -16,8 +16,6 @@ fetch(
 // FormData作成関数
 function setFormData(hash) {
     const body = new FormData();
-    for (let key in hash) {
-        body.append(key, hash[key]);
-    }
+    for (let key in hash) body.append(key, hash[key]);
     return body;
 }
