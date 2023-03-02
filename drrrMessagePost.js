@@ -3,7 +3,7 @@ const message = `おっぱいぺろぺろにゃり`
 
 // メッセージ送信処理
 fetch(
-    "?ajax=1#",
+    "?ajax",
     {
         method: 'POST', 
         body: setFormData({
