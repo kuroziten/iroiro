@@ -16,7 +16,7 @@ def imgCreate(message, cmd):
         data = json.dumps(
             {
                 "data": [],
-                "fn_index": "193",
+                "fn_index": "191",
                 "session_hash": i
             }
         )
@@ -30,7 +30,7 @@ def imgCreate(message, cmd):
         data = json.dumps(
             {
                 "data": [],
-                "fn_index": "201",
+                "fn_index": "199",
                 "session_hash": i
             }
         )
@@ -44,7 +44,7 @@ def imgCreate(message, cmd):
         data = json.dumps(
             {
                 "data": [],
-                "fn_index": "206",
+                "fn_index": "204",
                 "session_hash": i
             }
         )
@@ -110,7 +110,7 @@ def imgCreate(message, cmd):
                     "",
                     ""
                 ],
-                "fn_index": "77",
+                "fn_index": "76",
                 "session_hash": i
             }
         )
