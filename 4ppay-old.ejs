@@ -1,0 +1,271 @@
+<!-- インフォ画面編集画面 -->
+<script>
+    /**
+    * 初期表示時
+    * * DBから反映
+    * 
+    * 編集時
+    * * oninputでDBに反映
+    * 
+    **/
+</script>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport"
+            content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+        <title>画面編集</title>
+        <script src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+        <script>
+
+			function input_tab1(event) {
+				if (event.key === "Tab") {
+					// デフォルト動作停止
+					event.preventDefault();
+					//  Tabを挿入。範囲指定時は置換。
+					var TAB = "\t";
+					var value = this.value;
+					var sPos = this.selectionStart;
+					var ePos = this.selectionEnd;
+					var result = value.slice(0, sPos) + TAB + value.slice(ePos);
+					var cPos = sPos + TAB.length;
+					this.value = result;
+					this.setSelectionRange(cPos, cPos);
+					update(this.value,0)
+				}
+			}
+			function input_tab2(event) {
+				if (event.key === "Tab") {
+					// デフォルト動作停止
+					event.preventDefault();
+					//  Tabを挿入。範囲指定時は置換。
+					var TAB = "\t";
+					var value = this.value;
+					var sPos = this.selectionStart;
+					var ePos = this.selectionEnd;
+					var result = value.slice(0, sPos) + TAB + value.slice(ePos);
+					var cPos = sPos + TAB.length;
+					this.value = result;
+					this.setSelectionRange(cPos, cPos);
+					update(this.value,1)
+				}
+			}
+			function input_tab3(event) {
+				if (event.key === "Tab") {
+					// デフォルト動作停止
+					event.preventDefault();
+					//  Tabを挿入。範囲指定時は置換。
+					var TAB = "\t";
+					var value = this.value;
+					var sPos = this.selectionStart;
+					var ePos = this.selectionEnd;
+					var result = value.slice(0, sPos) + TAB + value.slice(ePos);
+					var cPos = sPos + TAB.length;
+					this.value = result;
+					this.setSelectionRange(cPos, cPos);
+					update(this.value,2)
+				}
+			}
+			function update(val,type) {
+				connect('/create_update',{'id' : '<%= _id %>' ,'data': val,'type':type});
+			}
+
+			function zaikoUpdateCheck (path,data) {
+				var r;
+				$.ajax({
+                    async: false,
+                    url: path,
+                    type: 'post',
+                    data:data,dataType: 'json'
+				}).done(function(res){
+					r = res;
+				}).fail(function(xhr, status, error){
+					alert(status);
+				});
+				return r;
+            }
+
+			/**
+			 * 非同期通信するやつ
+			**/
+			function connect (path,data,callBack) {
+				let xhr = new XMLHttpRequest();
+				xhr.open('POST', path);
+				xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+				xhr.send(JSON.stringify(data));
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState === 4 && xhr.status === 200) {
+						callBack(JSON.parse(xhr.responseText));
+					} else if (
+						xhr.readyState !== 1 &&
+						xhr.readyState !== 2 &&
+						xhr.readyState !== 3
+					) {
+						alert("エラーコード：" + xhr.readyState);
+					}
+				}
+			}
+				
+				
+			// 更新されていたら更新内容を反映する
+			function updateCheck () {
+				for (i=0;i<3;i++) {
+					connect('/create_select',{'id': '<%= _id %>', 'type':i}, function (req) {
+						if (req.data != document.getElementsByClassName("text").value) {
+							document.getElementsByClassName("text")[i].value = req.data;
+						}
+					});
+				}
+				setTimeout(function(){
+					 updateCheck();
+				},1000);
+			}
+			function tabChange(tar) {
+				for (i=0;i<3;i++) {
+					if ($(".tab").eq(i).text() == $(tar).text()) {
+						$(".tab").eq(i).css("background-color","yellow");
+						$(".text").eq(i).css("display","block");
+					} else {
+						$(".tab").eq(i).css("background-color","#ddd");
+						$(".text").eq(i).css("display","none");
+					}
+				}
+			}
+			window.onload = function () {
+
+				var strstr = "";
+				connect('/create_select',{'id': '<%= _id %>', 'type':0}, function (req) {
+					document.getElementsByClassName("text")[0].value = req.data;
+				});
+				connect('/create_select',{'id': '<%= _id %>', 'type':1}, function (req) {
+					document.getElementsByClassName("text")[1].value = req.data;
+				});
+				connect('/create_select',{'id': '<%= _id %>', 'type':2}, function (req) {
+					document.getElementsByClassName("text")[2].value = req.data;
+				});
+				
+				// element: Tabを入力できるようにしたい要素
+				var elements = document.getElementsByClassName("text");
+				elements[0].addEventListener("keydown", input_tab1);
+				elements[1].addEventListener("keydown", input_tab2);
+				elements[2].addEventListener("keydown", input_tab3);
+				updateCheck();
+				$(".tab").eq(0).css("background-color","yellow");
+				$(".text").eq(0).css("display","block");
+				
+				$(".form").submit(function(){
+					alert("リセットを行うと現在の編集内容がすべて破棄されます。");
+					return confirm("リセットしますか？");
+				});				
+			};
+        </script>
+        <style type="text/css">
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+			
+			.text {
+				width:100%;
+				height: 50%;
+				display: none;
+				tab-size: 4;
+			}
+
+			.header {
+				background-color: #eee;
+                font-weight: bold;
+				font-size: 15px;
+                padding: 10px 10px 0 10px;
+				border-bottom: solid 1px black;
+			}
+			
+			.tab {
+				display: inline-block;
+				border: solid 1px black;
+				border-bottom: 0;
+				border-radius: 10px 10px 0 0;
+				padding: 10px 10px 5px 10px;
+				width: 50px;
+				background-color: #ddd;
+				text-align: center;
+			}
+			.header-space {
+				height: 45px;
+			}
+			
+			a {
+				display: inline-block;
+				padding: 3px;
+				border: solid 1px #333;
+				background-color: #e9ebc5;
+				border-radius: 3px;
+				width: 80%;
+				max-width: 200px;
+				overflow: hidden;
+				vertical-align: middle;
+			}
+			
+			.r {
+				background-color: #ea9;
+			}
+
+			.a {
+				display: inline-block;
+				padding: 3px;
+				vertical-align: middle;
+			}
+			.b {
+			}
+			
+			button {
+				display: inline-block;
+				border: solid 1px black;
+				border-radius: 10px;
+				padding: 10px;
+				background-color: #ccf;
+			}
+			.reset {
+				background-color: #fbe;
+			}
+			.warn {
+				
+			}
+        </style>
+	</head>
+		<div class="header">
+			<div class="b">
+				<span class="a">公開中サイト　　</span><a href="<%= _url %>"><%= _url %></a>
+			</div>
+			<% if ( _rStatus == "公開依頼中") { %>
+				<div class="b">
+					<span class="a">公開依頼中サイト</span><a class="r" href="<%= _br_url %>"><%= _br_url %></a>
+				</div>
+			<% } %>
+			<div class="b">
+				<span class="a">開発中サイト　　</span><a href="<%= _dev_url %>"><%= _dev_url %></a>
+			</div>
+			<br>
+			<form action="" method="post">
+				<button name="submit" value="post">サイトの公開依頼</button>：<%= _rStatus %>
+				<br>
+			</form>
+			<form action="" method="post" class="form">
+				<button name="submit" class="reset" value="reset">開発環境のリセット</button><br>
+				<div class"warn">※現在公開されている内容を現在開発中の環境に適用します。また、公開依頼もリセットされます。</div>
+			</form>
+			<span class="tab" onclick="tabChange(this)">HTML</span>
+			<span class="tab" onclick="tabChange(this)">CSS</span>
+			<span class="tab" onclick="tabChange(this)">JS</span>
+		</div>
+		<textarea class="text" wrap="off" oninput="update(value,0)"><%- _html %></textarea>
+		<textarea class="text" wrap="off" oninput="update(value,1)"><%- _css %></textarea>
+	<textarea class="text" wrap="off" oninput="update(value,2)"><%- _js %></textarea>
+		<br><br>
+    <body>
+	</body>
+</html>
