@@ -1,0 +1,258 @@
+<!-- インフォ画面編集画面 -->
+<script>
+	/**
+	* 初期表示時
+	* * DBから反映
+	* 
+	* 編集時
+	* * oninputでDBに反映
+	* 
+	**/
+</script>
+
+<style type="text/css">
+	body {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+
+	.text {
+		width: 100%;
+		height: 50%;
+		tab-size: 4;
+	}
+
+	.header {
+		background-color: #eee;
+		font-weight: bold;
+		font-size: 15px;
+		padding: 10px 10px 0 10px;
+		border-bottom: solid 1px black;
+	}
+
+	.tab {
+		display: inline-block;
+		border: solid 1px black;
+		border-bottom: 0;
+		border-radius: 10px 10px 0 0;
+		padding: 10px 10px 5px 10px;
+		width: 50px;
+		background-color: #ddd;
+		text-align: center;
+	}
+
+	.header-space {
+		height: 45px;
+	}
+
+	a {
+		display: inline-block;
+		padding: 3px;
+		border: solid 1px #333;
+		background-color: #e9ebc5;
+		border-radius: 3px;
+		width: 80%;
+		max-width: 200px;
+		overflow: hidden;
+		vertical-align: middle;
+	}
+
+	.r {
+		background-color: #ea9;
+	}
+
+	.a {
+		display: inline-block;
+		padding: 3px;
+		vertical-align: middle;
+	}
+
+	.b {}
+
+	button {
+		display: inline-block;
+		border: solid 1px black;
+		border-radius: 10px;
+		padding: 10px;
+		background-color: #ccf;
+	}
+
+	.reset {
+		background-color: #fbe;
+	}
+
+	.CodeMirror {
+		white-space: pre-wrap;
+	}
+	.CodeMirror-scroll {
+		height: auto;
+		overflow-y: hidden;
+		overflow-x: auto;
+	}
+
+	.warn {}
+</style>
+
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<title>画面編集</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/dracula.min.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/htmlmixed/htmlmixed.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/css/css.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/javascript/javascript.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/xml/xml.min.js"></script>
+	</head>
+
+	<body>
+		<div class="header">
+			<div class="b">
+				<span class="a">公開中サイト　　</span><a href="<%= _url %>">
+					<%= _url %>
+				</a>
+			</div>
+			<% if ( _rStatus=="公開依頼中" ) { %>
+				<div class="b">
+					<span class="a">公開依頼中サイト</span><a class="r" href="<%= _br_url %>">
+						<%= _br_url %>
+					</a>
+				</div>
+			<% } %>
+			<div class="b">
+				<span class="a">開発中サイト　　</span><a href="<%= _dev_url %>">
+					<%= _dev_url %>
+				</a>
+			</div>
+			<br>
+			<form action="" method="post">
+				<button name="submit" value="post">サイトの公開依頼</button>：<%= _rStatus %>
+				<br>
+			</form>
+			<form action="" method="post" class="form">
+				<button name="submit" class="reset" value="reset">開発環境のリセット</button><br>
+				<div class="warn">※現在公開されている内容を現在開発中の環境に適用します。また、公開依頼もリセットされます。</div>
+			</form>
+			<span class="tab" index="0">HTML</span>
+			<span class="tab" index="1">CSS</span>
+			<span class="tab" index="2">JS</span>
+		</div>
+		<div class="textarea"><textarea class="text" id="html-editor"><%- _html %></textarea></div>
+		<div class="textarea"><textarea class="text" id="css-editor"><%- _css %></textarea></div>
+		<div class="textarea"><textarea class="text" id="js-editor"><%- _js %></textarea></div>
+		<input type="hidden" id="id" value="<%= _id %>">
+		<script>
+			let htmlEditor, cssEditor, jsEditor;
+			window.onload = async () => {
+				const fromTextArea = mode => {return{
+					lineNumbers: true,
+					theme: "dracula",
+					mode: mode,
+					tabSize: 4,
+					indentUnit: 4,
+					smartIndent: true,
+					matchBrackets: true,
+					autoCloseBrackets: true,
+				}};
+				htmlEditor = CodeMirror.fromTextArea(document.querySelector("#html-editor"), fromTextArea("htmlmixed"));
+				cssEditor = CodeMirror.fromTextArea(document.querySelector("#css-editor"), fromTextArea("css"));
+				jsEditor = CodeMirror.fromTextArea(document.querySelector("#js-editor"), fromTextArea("javascript"));
+				const maxHeight = window.innerHeight - document.querySelector(".header").clientHeight;
+				const setSize = editor => editor.setSize(
+					null,
+					(editor.doc.height + 10) > maxHeight
+					? maxHeight 
+					: (editor.doc.height + 10)
+				);
+				htmlEditor.on("change", async (cm, change) => {
+					const body = new FormData();
+					body.append("id", id);
+					body.append("type", "0");
+					body.append("data", cm.getValue());
+					fetch("/create_update", {
+						method: "POST",
+						body: body
+					});
+					setSize(htmlEditor);
+				});
+				cssEditor.on("change", async (cm, change) => {
+					const body = new FormData();
+					body.append("id", id);
+					body.append("type", "1");
+					body.append("data", cm.getValue());
+					fetch("/create_update", {
+						method: "POST",
+						body: body
+					});
+					setSize(cssEditor);
+				});
+				jsEditor.on("change", async (cm, change) => {
+					const body = new FormData();
+					body.append("id", id);
+					body.append("type", "2");
+					body.append("data", cm.getValue());
+					fetch("/create_update", {
+						method: "POST",
+						body: body
+					});
+					setSize(jsEditor);
+				});
+				const id = document.querySelector("#id").value;
+				let res;
+				let body;
+				body = new FormData();
+				body.append("id", id);
+				body.append("type", "0");
+				res = await fetch("/create_select", {
+					method: "POST",
+					body: body
+				});
+				const html = (await res.json()).data;
+				htmlEditor.setValue(html);
+
+				body = new FormData();
+				body.append("id", id);
+				body.append("type", "1");
+				res = await fetch("/create_select", {
+					method: "POST",
+					body: body
+				});
+				const css = (await res.json()).data;
+				cssEditor.setValue(css);
+
+				body = new FormData();
+				body.append("id", id);
+				body.append("type", "2");
+				res = await fetch("/create_select", {
+					method: "POST",
+					body: body
+				});
+				const js = (await res.json()).data;
+				jsEditor.setValue(js);
+				const tabChange = (e) => {
+					const textareaList = document.querySelectorAll(".textarea");
+				};
+				const tabs = document.querySelectorAll(".tab");
+				tabs[0].style.backgroundColor = "yellow";
+				const textareaList = document.querySelectorAll(".textarea");
+				textareaList.forEach(e2 => e2.style.display = "none");
+				textareaList[0].style.display = "block";
+				tabs.forEach(e => {
+					e.addEventListener("click", e => {
+						const textareaList = document.querySelectorAll(".textarea");
+						textareaList.forEach(e2 => e2.style.display = "none");
+						tabs.forEach(e2 => e2.style.backgroundColor = "#ddd");
+						e.target.style.backgroundColor = "yellow";
+						textareaList[e.target.getAttribute("index")].style.display = "block";
+					});
+				});
+			};
+		</script>
+	</body>
+</html>
