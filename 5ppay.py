@@ -50,6 +50,6 @@ for dt in dataList:
         points.append(dt["points"].get(key))
     print(f'{dt["name"]}さんの点数')
     print(f'合計：{sum(points)}')
-    print(f'平均：{math.ceil(sum(points) * 10) / 10}')
+    print(f'平均：{math.ceil(sum(points) / len(dt["points"]))}')
     print(f'最高：{max(points)}')
     print(f'最低：{min(points)}')
