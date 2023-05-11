@@ -1,3 +1,6 @@
+/*
+内緒機能が使えなくなる。画面をリロードしたら処理が内緒機能が使えるようになる
+*/
 (() => {
     const aaa = () => {
         const formData = new FormData();
