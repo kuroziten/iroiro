@@ -1,5 +1,3 @@
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 const ls = (await(await fetch("/ajax.php", { method: "post" })).json()).talks;
 let id = ls[ls.length - 1].id;
 
@@ -12,7 +10,7 @@ const func = async () => {
             if (i > 0) {
                 const newT = list[list.length - i];
                 let msg = newT.message;
-                if (!!msg && msg != "/image") {
+                if (!!msg && msg != "/image" && msg.slice(0, 4) != "http" && msg.slice(0, 3) != "/ai") {
                     msg = msg.replace(/\s+/g, '+');
                     const audio_query_response = await fetch(
                         "http://localhost:50021/audio_query?text=" + msg + "&speaker=3",
@@ -39,13 +37,12 @@ const func = async () => {
                             audioPlayer.play();
                         }
                     })
-                        .catch((reason) => {
-                            // エラー
-                        });
-                    await sleep(1500);
-                    const newId = newT.id;
-                    id = newId;
+                    .catch((reason) => {
+                        // エラー
+                    });
                 }
+                const newId = newT.id;
+                id = newId;
             }
             break;
         }
