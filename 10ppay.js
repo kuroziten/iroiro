@@ -5,7 +5,7 @@ const list = [];
 /* スペースを入れる関数 */
 const sRep = n => " ".repeat(n);
 /* 行作成関数 */
-const createRow = i => `${sRep(i)}*${sRep((column - (i ? i : -1) - 1))}${i + 1 == column ? "" : "*"}`;
+const createRow = i => `${sRep(i)}*${sRep((column - (i ? i : -1) - 1))}${column - i - 1 ? "*" : ""}`;
 /* ループ */
 for (let i = 0; i < column; i++) {
 	/* 行追加処理 */
