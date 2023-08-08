@@ -32,7 +32,7 @@
 	const si = setInterval(() => {
 		const pastTime = new Date();
 		pastTime.setSeconds(pastTime.getSeconds() - 5);
-		if (updtDate < pastTime) {
+		if (updtDate < pastTime && count1 == count2) {
 			alert(`処理完了 ${count1} ${count2}`);
 			console.log(`処理完了 ${count1} ${count2}`);
 			const json = JSON.stringify(dataList, null, 4);
