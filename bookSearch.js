@@ -1,120 +1,82 @@
 (async () => {
-
+	const idList = [];
+	let page = 1;
 	const startDate = new Date();
-	let p = 1;
-  let boxLList = [];
-	let dataList = [];
-	let updtDate = new Date();
-	let count1 = 0;
-	let count2 = 0;
-	let endFlg = false;
 	do {
-		console.log(`${p} ページ目処理開始 ${updtDate.getTime()}`);
-		if (p % 10 == 0) {
-			await getDataBase(p, true);
+		const div = document.createElement("div");
+		document.body.append(div);
+		div.innerHTML = await (await fetch(`https://bookclub.kodansha.co.jp/product_list?page=${page}&code=bungei-bunko`)).text();
+		if (div.querySelector("h1").textContent.trim() == "リクエスト集中により処理が完了できませんでした") {
+			break;
 		} else {
-			getDataBase(p, false);
+			console.log(`${page} ページ目 処理開始`);
+			div.querySelectorAll(".boxL").forEach(boxL => idList.push([boxL.querySelector(".tit").textContent.trim(), boxL.getAttribute("href")]));
 		}
-		
-		p++;
-		console.log(`${p} ${endFlg}`);
-	} while(!endFlg);
+		div.remove();
+		page++;
+	} while (1);
+	
+	const count = idList.length;
+	const dataList = [];
+	idList.forEach(id => getData(id));
 
+	function getData(id) {
+		const url = `https://bookclub.kodansha.co.jp${id[1]}`;
+		fetch(url)
+		.then(async e => {
+			const div = document.createElement("div");
+			document.body.append(div);
+			div.innerHTML = await e.text();
+      const data = {};
+      data.TITLE = `"${id[0].replace(/"/g, '""')}"`;
+      data.URL = url;
+			if (div.querySelector(".itemInfo") != null) {
+				const tdList = div.querySelector(".itemInfo").querySelectorAll("td");
+	      data.AUTHOR = `"${tdList[1].textContent.trim().replace(/"/g, '""')}"`;
+	      data.RELEASE_DATE = `"${tdList[2].textContent.trim().replace(/"/g, '""')}"`;
+	      data.PRICE = `"${tdList[3].textContent.trim().replace(/"/g, '""')}"`;
+	      data.ISBN = `"${tdList[4].textContent.trim().replace(/"/g, '""')}"`;
+	      data.FORMAT = `"${tdList[5].textContent.trim().replace(/"/g, '""')}"`;
+	      data.PAGE = `"${tdList[6].textContent.trim().replace(/"/g, '""')}"`;
+	      data.DETAIL = `"${div.querySelector("#contIn_text")?.textContent.replace(/"/g, '""')}"`;
+			} else {
+	      data.AUTHOR = "";
+	      data.RELEASE_DATE = "";
+	      data.PRICE = "";
+	      data.ISBN = "";
+	      data.FORMAT = "";
+	      data.PAGE = "";
+	      data.DETAIL = "";
+			}
+      dataList.push(data);
+			div.remove();
+		})
+		.catch(async e => {
+				console.log(`接続エラー ${url}`);
+				await new Promise(resolve => setTimeout(resolve, 1000));
+				getData(id);
+		});
+	}
+	
 	const si = setInterval(() => {
+		console.log(`処理中 ${dataList.length}/${count}`);
 		const pastTime = new Date();
 		pastTime.setSeconds(pastTime.getSeconds() - 5);
-		if (updtDate < pastTime && count1 == count2) {
-			console.log(`処理完了 ${count1} ${count2}`);
-			const json = JSON.stringify(dataList, null, 4);
-			console.log(json);
-			document.body.innerText = json;
-			console.log(`処理時間：${(new Date().getTime() - startDate.getTime()) / 1000}`);
-			alert(`処理完了 ${count1} ${count2}`);
+		if (count == dataList.length) {
+			console.log(`処理完了 --処理時間：${(new Date().getTime() - startDate.getTime()) / 1000} 秒`);
+			const separator = ',';
+			const keys = Object.keys(dataList[0]);
+			const header = keys.join(separator);
+			const csvRows = dataList.map(object => keys.map(key => object[key]).join(separator));
+			const csvContent = [header, ...csvRows].join('\n');
+			const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+			const link = document.createElement('a');
+			link.innerText = "CSVファイルをダウンロード";
+			link.href = URL.createObjectURL(blob);
+			link.download = "booklist.csv";
+			document.body.innerHTML = "";
+			document.body.append(link);
 			clearInterval(si);
 		}
 	}, 1000);	
-
-	async function getDataBase(p, awaitFlg) {
-		updtDate = new Date();
-		const url = `https://bookclub.kodansha.co.jp/product_list?page=${p}&code=bungei-bunko`;
-		if (!awaitFlg) {
-			fetch(url)
-			.then(async e => {
-				getDataBaseAction(await e.text());
-			})
-			.catch(async e => {
-				updtDate = new Date();
-				console.log(`${p} ページ目 リトライします ${url}`);
-				await new Promise(resolve => setTimeout(resolve, 1000));
-				getDataBase(p);
-			});		
-		} else {
-			getDataBaseAction(await(await fetch(url)).text());
-		}
-	}
-	function getDataBaseAction(html) {
-			const div = document.createElement("div");
-			document.body.append(div);
-			div.innerHTML = html;
-			if (div.querySelector("h1").textContent == "リクエスト集中により処理が完了できませんでした") {
-				endFlg = true;
-			} else {
-				const boxLList = div.querySelectorAll(".boxL");
-				let i = 1;
-				for (let boxL of boxLList) {
-					count1++;
-					getData(p, i, dataList, `https://bookclub.kodansha.co.jp${boxL.getAttribute("href")}`, boxL.querySelector(".tit").textContent);
-					i++;
-				}
-			}
-			div.remove();
-	}
-	function getData(p, i, dataList, url, tit) {
-		updtDate = new Date();
-		fetch(url)
-		.then(async e => {
-			updtDate = new Date();
-			try {
-        const div2 = document.createElement("div");
-        document.body.append(div2);
-        div2.innerHTML = await e.text();
-        const tdList = div2.querySelector(".itemInfo")?.querySelectorAll("td");
-        const data = {};
-
-        data.title = tit;
-        if (tdList != null) {
-          data.author = tdList[1].textContent.trim();
-          data.releaseDate = tdList[2].textContent.trim();
-          data.price = tdList[3].textContent.trim();
-          data.ISBN = tdList[4].textContent.trim();
-          data.format = tdList[5].textContent.trim();
-          data.page = tdList[6].textContent.trim();
-          data.url = url;
-          data.detail = div2.querySelector("#contIn_text")?.textContent.trim();
-        } else {
-          data.author = "";
-          data.releaseDate = "";
-          data.price = "";
-          data.ISBN = "";
-          data.format = "";
-          data.page = "";
-          data.url = url;
-          data.detail = "";
-        }
-        dataList.push(data);
-        div2.remove();
-				count2++;
-			} catch(e) {
-				console.log(`${p} ページ ${i} 冊目 変なエラー リトライします ${tit} ${url}`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        getData(p, i, updtDate, dataList, url);
-			}
-		})
-		.catch(async e => {
-			updtDate = new Date();
-			console.log(`${p} ページ ${i} 冊目 リトライします ${tit} ${url}`);
-			await new Promise(resolve => setTimeout(resolve, 1000));
-			getData(p, i, updtDate, dataList, url);
-		});
-	}
 })();
