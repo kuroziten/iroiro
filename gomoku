@@ -1,0 +1,1063 @@
+function myFunction() {
+  
+  var sR = 1;
+  var sC = 1;
+  var eR = 44;
+  var eC = 44;
+  // var getRange = new getRange();
+
+  var spredsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var currentSheet = spredsheet.getSheetByName("シート1");
+  var dataSheet = spredsheet.getSheetByName("data");
+  var cRanges = currentSheet.getRange(sR,sC,eR,eC).getValues();
+  var setRange = currentSheet.getRange(sR,sC,eR,eC);
+  var dRanges = dataSheet.getRange(2,2,3500,12).getValues();
+  var j = false;
+  var jMsg = false;
+  
+  // @?の場合の処理に対し、空席の少ないパターンを優先的に置くための配列
+  var qAttArr = [0,0,0]; // 自駒の数、置く場所R、置く場所C
+  var qAttArrBk = [0,0,0]; // 自駒の数、置く場所R、置く場所C
+  qAttArr[0] = qAttArr[1] = qAttArr[2] -1;
+  qAttArrBk[0] = qAttArrBk[1] = qAttArrBk[2] -1;
+  
+  if (qAttArr.length) {
+    msgBox("ぬるぬる");
+  }
+
+  /** checkmate_5 **/
+  j = putMate (j,cRanges,dRanges,currentSheet,5,20,11,5,"★")
+  j = putMate (j,cRanges,dRanges,currentSheet,5,20,11,5,"☆")
+  /** checkmate_5 **/
+
+  /** checkmate_4 **/
+  j = putMate (j,cRanges,dRanges,currentSheet,245,16,11,5,"★")
+  j = putMate (j,cRanges,dRanges,currentSheet,245,16,11,5,"☆")
+ /** checkmate_4 **/
+
+  /** wCheckAround_checkmate **/
+  if (!j) {
+    for (r = 9; r <= 29; r++){
+      for(c = 9; c <= 29; c++) {
+        if (cRanges[r][c] != "") {
+          j = wCheckAround_checkmate(r,c,cRanges,dRanges,currentSheet,"★");
+        }
+        if (j) {break;}
+      }
+      if (j) {break;}
+    }
+  }
+  if (!j) {
+    for (r = 9; r <= 29; r++){
+      for(c = 9; c <= 29; c++) {
+        if (cRanges[r][c] != "") {
+          j = wCheckAround_checkmate(r,c,cRanges,dRanges,currentSheet,"☆");
+        }
+        if (j) {break;}
+      }
+      if (j) {break;}
+    }
+  }
+  /** wCheckAround_checkmate **/
+
+  /* * * ☆ ★ 勝 確 定 ★ ☆ * * */
+  /** 勝確定A **/
+  j = putMate (j,cRanges,dRanges,currentSheet,2633,8,11,5,"★")
+  j = putMate (j,cRanges,dRanges,currentSheet,2633,8,11,5,"☆")
+  /** 勝確定A **/
+
+  /** 勝確定B_下処理 **/
+  j = putMate (j,cRanges,dRanges,currentSheet,2730,8,13,6,"☆")
+//  j = putMateAll (j,cRanges,dRanges,currentSheet,2729,8,"★")
+  if(j&&!jMsg){jMsg = true;msgBox( "確定下処理B" );} // 反映箇所の処理を出力
+  /** 勝確定B_下処理 **/
+
+//  /** 勝確定C_@?TEST **/
+//  j = putMateAll (j,cRanges,dRanges,currentSheet,2825,4,"★")
+////  j = putMateAll (j,cRanges,dRanges,currentSheet,2825,4,"☆")
+//  if(j&&!jMsg){jMsg = true;msgBox( "確定下処理C" );} // 反映箇所の処理を出力
+//  /** 勝確定C_@?TEST **/
+//
+  /** 勝確定D_@?TEST **/
+  j = putMate (j,cRanges,dRanges,currentSheet,2874,8,13,6,"☆")
+//  j = putMateAll (j,cRanges,dRanges,currentSheet,2873,8,"☆")
+  if(j&&!jMsg){jMsg = true;msgBox( "確定下処理D" );} // 反映箇所の処理を出力
+  /** 勝確定D_@?TEST **/
+//
+//  /** 勝確定E_@?TEST **/
+//  j = putMateAll (j,cRanges,dRanges,currentSheet,2969,4,"★")
+////  j = putMateAll (j,cRanges,dRanges,currentSheet,2969,4,"☆")
+//  if(j&&!jMsg){jMsg = true;msgBox( "確定下処理E" );} // 反映箇所の処理を出力
+//  /** 勝確定E_@?TEST **/
+  /* * * ☆ ★ 勝 確 定 ★ ☆ * * */
+
+  /* * * ☆ ★ 勝 確 定 Ａ （下処理）★ ☆ * * */
+  qAttArr[0] = qAttArr[1] = qAttArr[2] = -1;
+   if (!j) {
+     qAttArr = putMateAttArr (j,cRanges,dRanges,currentSheet,2537,8,11,5,qAttArr,"★","★")
+     //  qAttArr = putMateAttArr (j,cRanges,dRanges,currentSheet,2537,8,11,5,"☆")
+     if (qAttArr[0] != -1) {
+     }
+   }  
+  /* * * ☆ ★ 勝 確 定 Ａ （下処理）★ ☆ * * */
+  
+  /** not_checkmate_4 **/
+  j = putMate (j,cRanges,dRanges,currentSheet,1589,28,11,5,"★")
+  j = putMate (j,cRanges,dRanges,currentSheet,1589,28,11,5,"☆")
+  /** not_checkmate_4 **/
+
+  /** wCheckAround_checkmate_3_2 **/
+  if (!j) {
+    for (r = 9; r <= 29; r++){
+      for(c = 9; c <= 29; c++) {
+        if (cRanges[r][c] != "") {
+          j = wCheckAround_checkmate_3_2(r,c,cRanges,dRanges,currentSheet,"★");
+        }
+        if (j) {break;}
+      }
+      if (j) {break;}
+    }
+  }
+  if (!j) {
+    for (r = 9; r <= 29; r++){
+      for(c = 9; c <= 29; c++) {
+        if (cRanges[r][c] != "") {
+          j = wCheckAround_checkmate_3_2(r,c,cRanges,dRanges,currentSheet,"☆");
+        }
+        if (j) {break;}
+      }
+      if (j) {break;}
+    }
+  }
+  /** wCheckAround_checkmate_3_2 **/
+  
+  /** not_checkmate_3 **/
+  j = putMate (j,cRanges,dRanges,currentSheet,2213,20,11,5,"★")
+  j = putMate (j,cRanges,dRanges,currentSheet,2213,20,11,5,"☆")
+  /** not_checkmate_3 **/
+  
+  /** not_checkmate_2 **/
+  j = putMate (j,cRanges,dRanges,currentSheet,2117,8,11,5,"★")
+  j = putMate (j,cRanges,dRanges,currentSheet,2117,8,11,5,"☆")
+  /** not_checkmate_2 **/
+  
+}
+
+function wCheckAround_checkmate (r,c,cRanges,dRanges,currentSheet,Piece) {    
+  var mr = 0;
+  var mc = 0;
+  var judge = false;
+    
+  if (cRanges[r - 1][c + 1] == "") { /** 右上 **/
+    mr = r - 1;
+    mc = c + 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,437,7,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1109,5,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2441,1,Piece)) { // 右上
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,523,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1169,5,Piece) ||
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2443,1,Piece)) { // 真右
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,605,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1229,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2465,1,Piece)) { // 右下
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,689,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1289,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2477,1,Piece)) { // 真下
+        judge = true;
+      }
+      
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,773,7,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1349,5,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2489,1,Piece)) { // 左下
+//        judge = true;
+//      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,857,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2501,1,Piece)) { // 真左
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+        judge = true;
+      }
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r][c + 1] == "") { /** 真右 **/
+    mr = r;
+    mc = c + 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,523,7,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1169,5,Piece) ||
+      wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2443,1,Piece)) { // 真右
+
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,605,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1229,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2465,1,Piece)) { // 右下
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,689,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1289,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2477,1,Piece)) { // 真下
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,773,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1349,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2489,1,Piece)) { // 左下
+        judge = true;
+      }
+      
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,857,7,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2501,1,Piece)) { // 真左
+//        judge = true;
+//      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+        judge = true;
+      }
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+
+  if (cRanges[r + 1][c + 1] == "") { /** 右下 **/
+    mr = r + 1;
+    mc = c + 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,605,7,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1229,5,Piece) || 
+      wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2465,1,Piece)) { // 右下
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,689,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1289,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2477,1,Piece)) { // 真下
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,773,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1349,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2489,1,Piece)) { // 左下
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,857,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2501,1,Piece)) { // 真左
+        judge = true;
+      }
+      
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+//        judge = true;
+//      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+        judge = true;
+      }
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+
+  if (cRanges[r + 1][c] == "") { /** 真下 **/
+    mr = r + 1;
+    mc = c;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,689,7,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1289,5,Piece) || 
+        wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2477,1,Piece)) { // 真下
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,773,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1349,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2489,1,Piece)) { // 左下
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,857,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2501,1,Piece)) { // 真左
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+          judge = true;
+      }
+      
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+//          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+//        judge = true;
+//      }
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+
+  if (cRanges[r + 1][c - 1] == "") { /** 左下 **/
+    mr = r + 1;
+    mc = c - 1;
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,773,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1349,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2489,1,Piece)) { // 左下
+            
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,857,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2501,1,Piece)) { // 真左
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+        judge = true;
+      }
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r][c - 1] == "") { /** 真左 **/
+    mr = r;
+    mc = c - 1;
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,857,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2501,1,Piece)) { // 真左
+
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+        judge = true;
+      }
+      
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+        judge = true;
+      }
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r - 1][c - 1] == "") { /** 左上 **/
+    mr = r - 1;
+    mc = c - 1;
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,941,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2513,1,Piece)) { // 左上
+
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1025,7,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece) || 
+          wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2525,1,Piece)) { // 真上
+        judge = true;
+      }
+
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  return false;
+} /** wCheckAround_checkmate **/
+
+function wCheckAround_checkmate_3_2 (r,c,cRanges,dRanges,currentSheet,Piece) {
+    
+  var mr = 0;
+  var mc = 0;
+  var judge = false;
+
+  if (cRanges[r - 1][c + 1] == "") { /** 右上 **/
+    mr = r - 1;
+    mc = c + 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1109,5,Piece)) { // 右上
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r][c + 1] == "") { /** 真右 **/
+    mr = r;
+    mc = c + 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1169,5,Piece)) { // 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+
+  if (cRanges[r + 1][c + 1] == "") { /** 右下 **/
+    mr = r + 1;
+    mc = c + 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1229,5,Piece)) { // 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+
+  if (cRanges[r + 1][c] == "") { /** 真下 **/
+    mr = r + 1;
+    mc = c;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1289,5,Piece)) { // 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+
+  if (cRanges[r + 1][c - 1] == "") { /** 左下 **/
+    mr = r + 1;
+    mc = c - 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1349,5,Piece)) { // 左下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r][c - 1] == "") { /** 真左 **/
+    mr = r;
+    mc = c - 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1409,5,Piece)) { // 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r - 1][c - 1] == "") { /** 左上 **/
+    mr = r - 1;
+    mc = c - 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1469,5,Piece)) { // 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  
+  if (cRanges[r - 1][c - 1] == "") { /** 真上 **/
+    mr = r - 1;
+    mc = c - 1;
+    if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1529,5,Piece)) { // 真上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1925,2,Piece)) {judge = true;}// 右上
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1949,2,Piece)) {judge = true;}// 真右
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1973,2,Piece)) {judge = true;}// 右下
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,1997,2,Piece)) {judge = true;}// 真下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2021,2,Piece)) {judge = true;}// 左下
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2045,2,Piece)) {judge = true;}// 真左
+      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2069,2,Piece)) {judge = true;}// 左上
+//      if (wCheckAround(mr,mc,cRanges,dRanges,currentSheet,2093,2,Piece)) {judge = true;}// 真上
+      if (judge) {
+        currentSheet.getRange(mr + 1,mc + 1).setValue("★");
+        return true;
+      }
+    }
+  }
+  return false;
+} /** wCheckAround_checkmate_3_2 **/
+
+
+function wCheckAround(r,c,cRanges,dRanges,currentSheet,sr,loopNum,Piece) {
+  var pr = 0;
+  var pc = 0;
+  var js = false;
+  var exit = false;
+  var ok = false;
+  for (i = 0; i < loopNum; i++){
+    for (cR = 0; cR < 11; cR++){
+      for (cC = 0; cC < 11; cC++) {
+//        if (cRanges.getValues()[r-4+cR][c-4+cC] == dRanges.getValues()[sc - 4 + cR][4 - 4 + cR]){          
+//        }
+        if (dRanges[sr - 5 + cR][cC] == "S" &&
+           cRanges[r-5+cR][c-5+cC] != "") {
+          if (!js) {
+            js = true;
+          } else {
+            exit = true;
+            break;
+          }
+        }
+        
+        if (dRanges[sr - 5 + cR][cC] == "S!" &&
+           cRanges[r - 5 + cR][c - 5 + cC] != "") {
+          exit = true;
+          break;
+        }
+
+        if (dRanges[sr - 5 + cR][cC] == "C") {
+          if (cRanges[r-5+cR][c-5+cC] != "") {
+            exit = true;
+            break;
+          } else {
+            pr = r - 5 + cR;
+            pc = c - 5 + cC;
+          }
+        }
+
+        if (dRanges[sr - 5 + cR][cC] == "@" &&
+           cRanges[r-5+cR][c-5+cC] != Piece) {
+          exit = true;
+          break;
+        }
+        
+      }
+      if (exit){break;}
+    }
+    if (exit) {
+      js = false;
+      exit = false;
+      sr += 12;
+    } else {
+      ok = true
+      break;
+    }
+  }
+  
+  if (ok) {
+    // currentSheet.getRange(pr + 1,pc + 1).setValue("★");
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function checkmate(r,c,cRanges,dRanges,currentSheet,sr,loopNum,loopCrCc,lC,qAttArr,
+  searchPiece, // @?の場合、数える駒
+  Piece // 支点の駒
+  ) {
+
+  var pr = -1;
+  var pc = -1;
+  var js = false;
+  var exit = false;
+  var ok = false;
+  var pStart = false;
+  var pJudge = false;
+  var atpStart = false;
+  var atpJudge = false;
+  var atQNum = false;
+  var atQStart = false;
+  var atQJudge = false;
+  var dRange = "";
+  var cRange = "";
+
+  // 「DEP」二つのうち片方のみE許容する。両方がEの場合は却下
+  var deNum = 0;
+
+  var sNum = 0;
+  var sJudge = 0;
+  var s1Num = 0;
+  var s2Num = 0;
+  var s3Num = 0;
+  
+  // 置きたい場所と、空いていてほしい場所の条件が合う場合、prpcに代入する
+  var ts1 = false;
+  var ts2 = false;
+  var tc1 = false;
+  var tc2 = false;
+  
+  var j = false;
+
+  var deb = false;
+  
+  if (false && sr == 245 && Piece == "☆") {
+    deb = true;
+  }
+  if(deb){msgBox("")}
+    
+  for (i = 0; i < loopNum; i++){
+        
+    for (cR = 0; cR < loopCrCc; cR++){
+      for (cC = 0; cC < loopCrCc; cC++) {
+        dRange = dRanges[sr - lC + cR][cC];
+        cRange = cRanges[r - lC + cR][c - lC + cC];
+        
+        /** SWITCH **/
+        
+        if ((dRange == "TC1" || dRange == "TC2") && cRange == E(Piece)) {          
+            exit = true;
+            break;          
+        }
+        
+        if (dRange == "TC1" && cRange == "") {
+          tc1 = true;
+          pr = r - lC + cR;
+          pc = c - lC + cC;
+        }
+
+        if (dRange == "TS1" && cRange == E(Piece)) {
+          ts1 = true;
+        }
+        
+        if (tc1 && ts1) {
+            exit = true;
+            break;          
+        }
+        
+        
+        if (dRange == "TS1" && cRange == E(Piece)) {
+          ts1 = true;
+        } else if (dRange == "TS2" && cRange == E(Piece)) {
+          ts2 = true;
+        }
+        
+        if (ts1 && ts2) {
+          ts1 = false;
+          ts2 = false;
+        }
+        
+        /** SWITCH **/
+        
+        /** DEP **/
+        if (dRange == "DEP") {
+          if (cRange == E(Piece)) {
+            deNum++;
+          }
+          if (deNum == 2) {
+            deNum = 0;
+            exit = true;
+            break;
+          }
+        }
+        /** DEP **/
+
+        /** S1,S2,S3 **/
+        if (!sJudge && 
+          dRange == "S1" || 
+          dRange == "S2" ||
+          dRange == "S3") {
+          sJudge = true;
+        }
+        if (dRange == "S1" && cRange == "") {
+          s1Num++;
+          if (s1Num == 2){sNum++;}
+        }
+        if (dRange == "S2" && cRange == "") {
+          s2Num++;
+          if (s2Num == 2){sNum++;}
+        }
+        if (dRange == "S3" && cRange == "") {
+          s3Num++;
+          if (s3Num == 2){sNum++;}
+        }
+        /** S1,S2,S3 **/
+        
+        if (dRange == "E" && 
+          cRange != E(Piece)) {
+          if(deb){msgBox("E")}
+            exit = true;
+            break;
+        }
+
+        if (!atQJudge && dRange == "@?") {
+          if (!atQStart) {
+            atQStart = true;
+          }
+          if (cRange == "") {
+            if (
+            cRanges[r - lC + cR - 1][c - lC + cC + 1] != "" ||
+            cRanges[r - lC + cR][c - lC + cC + 1] != "" ||
+            cRanges[r - lC + cR + 1][c - lC + cC + 1] != "" ||
+            cRanges[r - lC + cR + 1][c - lC + cC] != "" ||
+            cRanges[r - lC + cR + 1][c - lC + cC - 1] != "" ||
+            cRanges[r - lC + cR][c - lC + cC - 1] != "" ||
+            cRanges[r - lC + cR - 1][c - lC + cC - 1] != "" ||
+            cRanges[r - lC + cR - 1][c - lC + cC] != "")
+            atQJudge = true;
+            pr = r - lC + cR;
+            pc = c - lC + cC;
+          }
+        }
+
+        if (dRange == "@P") {
+          if(deb){msgBox("@P")}
+          if (!atpStart) {
+            atpStart = true;
+          }
+          if (cRange == Piece) {
+            atpJudge = true;
+          }
+        }
+
+        if (dRange == "P") {
+          if(deb){msgBox("P")}
+          if (!pStart) {
+            pStart = true;
+          }
+          if (cRange != "") {
+            pJudge = true;
+          }
+        }
+        
+        if (dRange == "S" &&
+           cRange != "") {
+           if(deb){msgBox("S")}
+          if (!js) {
+            js = true;
+          } else {
+            exit = true;
+            break;
+          }
+        }
+        
+        if (dRange == "S!" &&
+           cRange != "") {
+           if(deb){msgBox("S!")}
+          exit = true;
+          break;
+        }
+
+        if (dRange == "C") {
+          if (cRange != "") {
+          if(deb){msgBox("C")}
+            exit = true;
+            break;
+          } else {
+            pr = r - lC + cR;
+            pc = c - lC + cC;
+          }
+        }
+
+        if (dRange == "@" &&
+           cRange != Piece) {
+           if(deb){msgBox("@")}
+          exit = true;
+          break;
+        }
+        
+      }
+      if (exit){break;}
+    }
+    if (exit || pStart && !pJudge || atpStart && !atpJudge || atQStart && !atQJudge ||
+      (sJudge && sNum < 2) || pr == -1)  {
+      js = false;
+      exit = false;
+      sr += (loopCrCc + 1);
+      j = false;
+      pStart = false;
+      pJudge = false;
+      atpStart = false;
+      atpJudge = false;
+      atQStart = false;
+      atQJudge = false;
+      deb = false;
+      sJudge = false;
+      sNum = 0;
+      s1Num = 0;
+      s2Num = 0;
+      s3Num = 0;
+      pr = -1;
+      pc = -1;
+    } else {
+      ok = true
+      break;
+    }
+  }
+  
+  if (ok) {
+    currentSheet.getRange(pr + 1,pc + 1).setValue("★");
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function getRange(r,c) {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("シート1").getRange(r, c).getValue();
+}
+function setRange(r,c,val) {
+  SpreadsheetApp.getActiveSpreadsheet().getSheetByName("シート1").getRange(r, c).setValue(val);
+}
+
+function msgBox (val) {
+  Browser.msgBox(val);
+}
+
+/** 真上支点 **/
+function copyRange (sr,str) {
+  var spredsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = spredsheet.getSheetByName("data");
+  var dRanges = dataSheet.getRange(sr,2,11,11).getValues();
+  var dRanges2 = dataSheet.getRange(sr,15,11,11).getValues();
+  
+  if (str == "右上") {
+    /** 右上 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[i][10 - i] = dRanges[i][5];
+    }
+  } else if (str == "真右") {
+    /** 真右 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[5][10 - i] = dRanges[i][5];
+    }
+  } else if (str == "右下") {
+    /** 右下 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[10 - i][10 - i] = dRanges[i][5];
+    }
+  } else if (str == "左下") {
+    /** 左下 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[10 - i][i] = dRanges[i][5];
+    }
+  } else if (str == "真下") {
+    /** 真下 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[10 - i][5] = dRanges[i][5];
+    }
+  } else if (str == "真左") {
+    /** 真左 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[5][i] = dRanges[i][5];
+    }
+  } else if (str == "左上") {
+    /** 左上 **/
+    for (i = 0;i < 11; i++) {
+      dRanges2[i][i] = dRanges[i][5];
+    }
+  }
+  dataSheet.getRange(sr,15,11,11).setValues(dRanges2);
+} /** copyRange **/
+
+/** 真上支点 **/
+function copyRange2 (sr,cou) {
+  var spredsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = spredsheet.getSheetByName("data");
+  var dRanges = dataSheet.getRange(sr,2,11,11).getValues();
+  var dRanges2 = dataSheet.getRange(sr,15,11,11).getValues();
+  var f = 0;
+  var fi = 0;
+  var ten = 0;
+  /** 右回転 **/
+  dRanges2[5][5] = dRanges[5][5];
+  for (lop = 0;lop < cou; lop++) { 
+    for (n = 5;n != 0; n--) { 
+      f = 5 - n;
+      ten = 10 - f;
+      for (i = 0;i < n; i++) {
+        fi = i + f;
+        dRanges2[f][5 + i] = dRanges[f][fi];
+        dRanges2[fi][ten] = dRanges[f][5 + i];
+        dRanges2[5 + i][ten] = dRanges[fi][ten];
+        dRanges2[ten][ten - i] = dRanges[5 + i][ten];
+        dRanges2[ten][5 - i] = dRanges[ten][ten - i];
+        dRanges2[ten - i][f] = dRanges[ten][5 - i];
+        dRanges2[5 - i][f] = dRanges[ten - i][f];
+        dRanges2[f][fi] = dRanges[5 - i][f];
+       }
+    }
+    for (r = 0; r < 11; r ++) {
+      for (c = 0; c < 11; c ++) {
+        dRanges[r][c] = dRanges2[r][c];
+      }
+    }
+  }
+  dataSheet.getRange(sr,15,11,11).setValues(dRanges2);
+} /** copyRange2 **/
+
+/** 真上支点 **/
+function copyRange3 (sr,cou) {
+  var spredsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = spredsheet.getSheetByName("data");
+  var dRanges = dataSheet.getRange(sr,2,13,13).getValues();
+  var dRanges2 = dataSheet.getRange(sr,15,13,13).getValues();
+  var f = 0;
+  var fi = 0;
+  var ten = 0;
+l  /** 右回転 **/
+  dRanges2[6][6] = dRanges[6][6];
+  for (lop = 0;lop < cou; lop++) { 
+    for (n = 6;n != 0; n--) { 
+      f = 6 - n;
+      ten = 12 - f;
+      for (i = 0;i < n; i++) {
+        fi = i + f;
+        dRanges2[f][6 + i] = dRanges[f][fi];
+        dRanges2[fi][ten] = dRanges[f][6 + i];
+        dRanges2[6 + i][ten] = dRanges[fi][ten];
+        dRanges2[ten][ten - i] = dRanges[6 + i][ten];
+        dRanges2[ten][6 - i] = dRanges[ten][ten - i];
+        dRanges2[ten - i][f] = dRanges[ten][6 - i];
+        dRanges2[6 - i][f] = dRanges[ten - i][f];
+        dRanges2[f][fi] = dRanges[6 - i][f];
+       }
+    }
+    for (r = 0; r < 13; r ++) {
+      for (c = 0; c < 13; c ++) {
+        dRanges[r][c] = dRanges2[r][c];
+      }
+    }
+  }
+  dataSheet.getRange(sr,17,13,13).setValues(dRanges2);
+} /** copyRange3 **/
+
+function testbb () {
+  var num = 2796;
+  //  copyRange(num,"右上");num = num + 12;
+  //  copyRange(num,"真右");num = num + 12;
+  //  copyRange(num,"右下");num = num + 12;
+  //  copyRange(num,"真下");num = num + 12;
+  //  copyRange(num,"左下");num = num + 12;
+  //  copyRange(num,"真左");num = num + 12;
+  //  copyRange(num,"左上");num = num + 12;
+  //  copyRange(num,"真上");
+  
+  copyRange3(num,2);num=num+14;
+  copyRange3(num,4);num=num+14;
+  copyRange3(num,6);num=num+14;
+
+}
+
+function putMate (j,cRanges,dRanges,currentSheet,s,l,loopCrCc,lC,Piece) {
+  var r,c;
+    if (!j) {
+    for (r = 9; r <= 29; r++){
+      for(c = 9; c <= 29; c++) {
+        if (cRanges[r][c] == Piece) {
+          j = checkmate(r,c,cRanges,dRanges,currentSheet,s,l,loopCrCc,lC,null,"",Piece);
+        }
+        if (j) {break;}
+      }
+      if (j) {break;}
+    }
+  }
+  return j;
+}
+
+function putMateAttArr (j,cRanges,dRanges,currentSheet,s,l,loopCrCc,lC,Piece) {
+  var r,c;
+    if (!j) {
+    for (r = 9; r <= 29; r++){
+      for(c = 9; c <= 29; c++) {
+        if (cRanges[r][c] == Piece) {
+          j = checkmate(r,c,cRanges,dRanges,currentSheet,s,l,loopCrCc,lC,Piece);
+        }
+        if (j) {break;}
+      }
+      if (j) {break;}
+    }
+  }
+  return j;
+}
+
+function E(Piece) {
+  if(Piece == "★") {
+    return "☆";
+  } else {
+    return "★";
+  }
+}
