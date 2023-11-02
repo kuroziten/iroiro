@@ -1,3 +1,22 @@
+item1:
+  type: object
+  properties: 
+    item1_1:
+      type: string
+    item1_2:
+      type: array
+      items:
+        type: object
+        properties:
+          item1_2_1:
+            type: string
+    item1_3:
+      type: object
+      properties:
+        item1_3_1:
+          type: string
+
+
 let data = 
 `
     アイテム１
