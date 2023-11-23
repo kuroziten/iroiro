@@ -1,4 +1,4 @@
-(() => {
+window.onload = () => {
     while (document.body.querySelectorAll("link").length > 0)
         document.body.querySelector("link").remove();
     while (document.body.querySelectorAll("style").length > 0)
@@ -133,4 +133,4 @@
         }
     `;
     document.body.append(style);
-})();
+};
