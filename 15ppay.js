@@ -1,4 +1,4 @@
-window.onload = () => {
+const cssAction = () => {
     while (document.body.querySelectorAll("link").length > 0)
         document.body.querySelector("link").remove();
     while (document.body.querySelectorAll("style").length > 0)
@@ -55,6 +55,9 @@ window.onload = () => {
                     font-size: min(30px, calc(4vw));
                 }
                 & p {
+                    &:nth-of-type(4) font u {
+                        animation: warningAnime 3s infinite;
+                    }
                     width: 100vw;
                 }
                 & div:nth-child(n + 3) {
@@ -131,6 +134,22 @@ window.onload = () => {
                 }
             }
         }
+        .warning {
+            animation: warningAnime 3s infinite;
+        }
+        @keyframes warningAnime {
+            0% {
+                color: red;
+            }
+            50% {
+                color: black;
+            }
+            100% {
+                color: red;
+            }
+        }
     `;
     document.body.append(style);
 };
+cssAction();
+window.onload = () => cssAction();
