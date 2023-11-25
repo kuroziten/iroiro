@@ -56,9 +56,6 @@ window.onload = () => {
                 font-size: min(30px, calc(4vw));
             }
             & p {
-                &:nth-of-type(4) font u {
-                    animation: warningAnime 3s infinite;
-                }
                 width: 100vw;
             }
             & div:nth-child(n + 3) {
@@ -142,7 +139,7 @@ window.onload = () => {
                 color: red;
             }
             50% {
-                color: black;
+                color: white;
             }
             100% {
                 color: red;
