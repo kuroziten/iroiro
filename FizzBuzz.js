@@ -2,7 +2,7 @@ var v = 30;
 console.log(
     (!(f = (v % 3)) | !(b = (v % 5)))
         ? !!f
-	          ? "buzz"
+            ? "buzz"
             : !b
                 ? "fizzbuzz"
                 : "fizz"
