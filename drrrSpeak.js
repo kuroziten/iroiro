@@ -1,3 +1,13 @@
+// ==UserScript==
+// @name         ziten
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        http://*/*
+// @grant        none
+// ==/UserScript==
+
 const ls = (await(await fetch("/ajax.php", { method: "post" })).json()).talks;
 let id = ls[ls.length - 1].id;
 
