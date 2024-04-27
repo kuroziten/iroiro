@@ -15,6 +15,11 @@ const func = async () => {
 					let msg = list[i - 1].querySelector("message").textContent;
 					if (!!msg && msg != "/image" && msg.slice(0, 4) != "http" && msg.slice(0, 3) != "/ai") {
 						msg = msg.replace(/\s+/g, '+');
+						if (/^\d{2}\/\d{2}\(.\)\+\d{2}:\d{2}$/.test(msg)) {
+							l=msg.match(/(\d{2}|\(.\))/g).map(e=>!isNaN(e)?Number(e):e[1]+"曜日");
+							msg = `${l[0]}月${l[1]}日${l[2]}${l[3]}時${l[4]}分`;
+						}
+
 						const audio_query_response = await fetch(
 							"http://localhost:50021/audio_query?text=" + msg + "&speaker=3",
 							{
