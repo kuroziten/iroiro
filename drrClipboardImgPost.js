@@ -16,7 +16,7 @@ document.querySelector('textarea').addEventListener('paste', e => {
                 img.src = base64Data;
                 document.body.append(d);
 
-                d.innerHTML = "送信してよろしいですか？"
+                d.innerHTML = "送信してよろしいですか？";
                 yes.innerHTML = "送信する";
                 no.innerHTML = "キャンセル";
 
