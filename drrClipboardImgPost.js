@@ -1,10 +1,12 @@
+let file = null;
 document.querySelector('textarea').addEventListener('paste', e => {
+    if (file != null) return;
     for (item of (e.clipboardData || e.originalEvent.clipboardData).items) {
         if (item.type.indexOf('image') !== -1) {
             event.preventDefault();
-            const blob = item.getAsFile();
+            file = item.getAsFile();
             const reader = new FileReader();
-            reader.readAsDataURL(blob);
+            reader.readAsDataURL(file);
             reader.onload = e => {
                 const base64Data = e.target.result;
                 const d = document.createElement("div");
@@ -44,15 +46,17 @@ document.querySelector('textarea').addEventListener('paste', e => {
                 });
                 yes.addEventListener("click", e => {
                     const fd = new FormData();
-                    fd.append('img_path', item.getAsFile());
+                    fd.append('img_path', file);
                     fd.append('upimg', 'アップロード');
                     fetch('/room/', {
                         method: 'POST',
                         body: fd
                     });
+                    file = null;
                     d.remove();
                 });
                 no.addEventListener("click", e => {
+                    file = null;
                     d.remove();
                 });
 
