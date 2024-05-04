@@ -5,7 +5,6 @@ document.querySelector('textarea').addEventListener('paste', e => {
         if (item.type.indexOf('image') !== -1) {
             event.preventDefault();
             file = item.getAsFile();
-            console.log(file);
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = e => {
