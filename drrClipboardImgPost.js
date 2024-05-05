@@ -1,3 +1,8 @@
+/**
+ * デュラララチャットでクリップボードの画像を送信するツール.
+ *
+ * 名誉協力者補佐代行: 【チャーコードマスター】ルツ
+ **/
 let file = null;
 document.querySelector('textarea').addEventListener('paste', e => {
     if (file != null) return;
