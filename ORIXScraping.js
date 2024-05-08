@@ -1,8 +1,9 @@
 (async () => {
+    let resultText = "";
 
     document.querySelector('option[label="東京都"]').selected = true;
     set_start_towns();
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     let firstSkip = true;
     for (o of start_towns_pk.querySelectorAll("option")) {
@@ -31,7 +32,9 @@
             /* 借りる日を選択 */
             start_date.click();
             await new Promise(resolve => setTimeout(resolve, 500));
-            document.querySelector('td[onclick="set_start_times(1715526000);"]').click();
+            const start_date_Cal = document.querySelector('td[onclick="set_start_times(1715526000);"]');
+            if (!start_date_Cal) break;
+            start_date_Cal.click();
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             let firstSkip3 = true;
@@ -56,15 +59,13 @@
                 set_btn_submit();
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
-                /* 禁煙 */
+                /* 喫煙 */
                 document.querySelector('input[name="sop1"][value="2"]').click();
-                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 for (let i = 3; i <= 4; i++) {
 
                     /* クルマを選ぶ */
                     document.querySelector('input[onchange="submit_btn_active();"][value="' + i + '"]').click();
-                    await new Promise(resolve => setTimeout(resolve, 1000));
 
 
                     const fd = new FormData(document.querySelector('form[action="https://car.orix.co.jp/order_chk_fm/"]'));
@@ -85,13 +86,23 @@
                     const res = await (await fetch("https://car.orix.co.jp/order_chk_fm/", { method: "post", body: fd2 })).text();
                     const html = document.createElement("div");
                     html.innerHTML = res;
-                    const result = html.querySelector('p[class="txt-cmn-error-01 s-strong s-center"]')?.textContent;
-                    console.log(
+                    const result1 = html.querySelector('p[class="txt-cmn-error-01 s-strong s-center"]')?.textContent;
+                    const result2 = html.querySelector('p[class="txt-cmn-error-01 s-strong"]')?.textContent;
+                    let r = document.querySelectorAll('input[name="sop2"]');
+                    for (const rSub of r) {
+                        if (rSub.checked) {
+                            r = rSub;
+                        }
+                    }
+                    const result =
                         start_towns_pk.options[start_towns_pk.selectedIndex].textContent
-                        , start_shops_pk.options[start_shops_pk.selectedIndex].textContent
-                        , result);
+                        + " " + start_shops_pk.options[start_shops_pk.selectedIndex].textContent
+                        + " " + r.parentElement.textContent.trim()
+                        + " " + (result1 ? result1 : result2 ? result2 : "見つかったかもしれません。");
+                    resultText += result + "\n";
+                    console.log(result);
 
-                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    await new Promise(resolve => setTimeout(resolve, 500));
 
                 }
 
@@ -99,5 +110,6 @@
             }
         }
     }
-
+    alert("スクレイピングが完了しました。");
+    console.log(resultText);
 })();
