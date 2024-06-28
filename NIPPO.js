@@ -1,3 +1,9 @@
+var sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));//timeはミリ秒
+
+// await sleep(1000);
+// console.log("test1");
+// await sleep(1000);
+// console.log("test2");
 
 var pst = async (_yyyy, _MM, _dd, _s_HH, _s_mm, _e_HH, _e_mm) => {
     var saisouriyu = $("#inputsaisouriyu").val();
@@ -31,7 +37,8 @@ var pst = async (_yyyy, _MM, _dd, _s_HH, _s_mm, _e_HH, _e_mm) => {
     var tomorrow = y + m + d;
     tomorrow.toString();
 
-    if(tomorrow > 20231031){
+    if(tomorrow > 20240628){
+		console.log(tomorrow);
         alert("未来日は送信できません。");
         return;
     }
@@ -106,12 +113,32 @@ var pst = async (_yyyy, _MM, _dd, _s_HH, _s_mm, _e_HH, _e_mm) => {
 
         const data = new FormData(document.querySelector("#nippou"));
         console.log(await(await fetch("/syanai_page/nippou.do", {method: "POST", body: data})).text());
+		console.log("送信完了")
+        await sleep(5000);
         // $('#nippou').submit();
     }
 };
 
-pst("2023", "10", "25", "9", "30", "20", "30");
-pst("2023", "10", "26", "9", "30", "18", "30");
-pst("2023", "10", "27", "9", "30", "20", "00");
-pst("2023", "10", "30", "9", "30", "19", "30");
-pst("2023", "10", "31", "9", "30", "19", "30");
+// await pst("2024", "06", "03", "9", "0", "17", "30");
+// await pst("2024", "06", "04", "9", "0", "17", "30");
+// await pst("2024", "06", "05", "9", "0", "17", "30");
+// await pst("2024", "06", "06", "9", "0", "17", "30");
+// await pst("2024", "06", "07", "9", "0", "17", "30");
+
+await pst("2024", "06", "10", "9", "0", "18", "0");
+await pst("2024", "06", "11", "9", "0", "17", "30");
+await pst("2024", "06", "12", "9", "0", "17", "30");
+await pst("2024", "06", "13", "9", "0", "18", "0");
+await pst("2024", "06", "14", "9", "0", "19", "30");
+
+await pst("2024", "06", "17", "9", "0", "19", "0");
+await pst("2024", "06", "18", "9", "0", "17", "30");
+await pst("2024", "06", "19", "9", "0", "18", "0");
+await pst("2024", "06", "20", "9", "0", "17", "30");
+await pst("2024", "06", "21", "9", "0", "18", "0");
+
+await pst("2024", "06", "24", "9", "0", "17", "30");
+await pst("2024", "06", "25", "9", "0", "17", "30");
+await pst("2024", "06", "26", "9", "0", "18", "0");
+await pst("2024", "06", "27", "9", "0", "17", "30");
+await pst("2024", "06", "28", "9", "0", "17", "30");
