@@ -1,115 +1,143 @@
-let file = null;
-document.querySelector('textarea').addEventListener('paste', e => {
-    if (file != null) return;
-    for (item of (e.clipboardData || e.originalEvent.clipboardData).items) {
-        if (item.type.indexOf('image') !== -1) {
-            event.preventDefault();
-            file = item.getAsFile();
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = e => {
-                const base64Data = e.target.result;
-                const d = document.createElement("div");
-                const d2 = document.createElement("div");
-                const img = document.createElement("img");
-                const d3 = document.createElement("div");
-                const yes = document.createElement("div");
-                const no = document.createElement("div");
-                img.src = base64Data;
-                document.body.append(d);
-
-                d.innerHTML = "送信してよろしいですか？";
-                yes.innerHTML = "送信する";
-                no.innerHTML = "キャンセル";
-
-                d.append(d2);
-                d2.append(img);
-                d.append(d3);
-                d3.append(yes);
-                d3.append(no);
-
-                yes.addEventListener("mouseover", e => {
-                    const s = e.target.style;
-                    s.backgroundColor = "pink";
-                });
-                yes.addEventListener("mouseout", e => {
-                    const s = e.target.style;
-                    s.backgroundColor = "white";
-                });
-                no.addEventListener("mouseover", e => {
-                    const s = e.target.style;
-                    s.backgroundColor = "pink";
-                });
-                no.addEventListener("mouseout", e => {
-                    const s = e.target.style;
-                    s.backgroundColor = "white";
-                });
-                yes.addEventListener("click", async e => {
-                    const fd = new FormData();
-                    fd.append('img_path', file);
-                    fd.append('upimg', 'アップロード');
-                    const res = await fetch('/room/', {
-                        method: 'POST',
-                        body: fd
-                    });
-                    const text = await res.text();
-                    const html = document.createElement("div");
-                    html.innerHTML = text;
-                    if (!html.querySelector("textarea")) {
-                        if (html.querySelector(".header")?.querySelector("p")) {
-                            alert("画像は10秒以上時間をあけてから投稿してください。");
-                            return;
-                        }
-                        alert("413 Request Entity Too Large");
-                    }
-                    file = null;
-                    d.remove();
-                });
-                no.addEventListener("click", e => {
-                    file = null;
-                    d.remove();
-                });
-
-                d.style = `
-                position: fixed;
-                left: 50%;
-                top: 50%;
-                transform: translateX(-50%)
-                translateY(-50%);
-                background-color: black;
-                border-radius: 10px;
-                border: 1px solid white;
-                padding: 5px;
-                text-align: center;`;
-                d2.style = `
-                width: 270px;
-                height: 270px;
-                border-radius: 10px;
-                border: 1px solid white;
-                padding: 5px;
-                margin-bottom: 5px;`;
-                img.style = `
-                object-fit: contain;
-                width: 100%;
-                height: 100%;`;
-                d3.style = `
-                display: flex;
-                justify-content: space-between;`;
-                yes.style = `
-                background-color: white;
-                color: black;
-                width: 100%;
-                margin-right: 2.5px;
-                border-radius: 10px;
-                `;
-                no.style = `
-                background-color: white;
-                color: black;
-                width: 100%;
-                margin-left: 2.5px;
-                border-radius: 10px;
-                `;
-            };
+let url = 'https://www.youtube.com/watch?v=utPEH5Y0fnU';
+{
+    const getYtbId = (url) => {
+        let id = null;
+        if (url.indexOf("?v=") != -1) {
+            id = url.substr(url.indexOf("?v=") + 3, 11);
+        } else if (url.indexOf(".be/") != -1) {
+            id = url.substr(url.indexOf(".be/") + 4, 11);
+        } else {
+            id = url;
         }
+        return id;
     }
-});
+    let ytbId = getYtbId(url);
+
+    const div = document.createElement("div");
+    console.log(div);
+    document.body.append(div);
+    div.style.width = "100vw";
+    const messageBox = document.querySelector(".message_box");
+    messageBox.style.backgroundColor = "rgba(0,0,0,0)";
+    messageBox.style.color = "white";
+    const mbh = messageBox.clientHeight;
+    div.style.height = `100vh`;
+    div.style.backgroundColor = "red";
+    div.style.position = "fixed";
+    div.style.top = `0`;
+    div.style.display = "flex";
+    div.style.justifyContent = "center";
+    div.style.alignItems = "center";
+    div.style.zIndex = "-1";
+    div.style.zIndex = "-1";
+
+    const innterDiv = document.createElement("div");
+    div.append(innterDiv);
+    innterDiv.id = "player";
+    innterDiv.style.minHeight = "100%";
+    innterDiv.style.minWidth = "100%";
+    
+    var tag = document.createElement('script');
+    
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player(
+            'player'
+            ,{
+                videoId: ytbId
+            },{
+                'playsinline': 1
+            }
+            
+        );
+    }
+
+    let notPlayFlg = true;
+    setInterval(()=>{
+        if (player.getPlayerState() != 1 && !notPlayFlg) {
+            notPlayFlg = true;
+        };
+    },500);
+    document.body.addEventListener("click", function(){
+        if (notPlayFlg) {
+            notPlayFlg = false;
+            player.playVideo();
+        }
+    });
+
+    const style = document.createElement("style");
+    document.body.append(style);
+    style.type = `text/css`;
+    style.innerText = `
+        body::-webkit-scrollbar{
+            display: none;
+        }        
+    `;
+
+    const menu = document.querySelector(".menu");
+    
+    const newUpimg = document.createElement("li");
+    menu.prepend(newUpimg);
+    newUpimg.innerText = "画像送信";
+    newUpimg.style.textDecoration = "underline";
+    newUpimg.style.color = "pink";
+    const input_file = document.querySelector('#img_path');
+    newUpimg.addEventListener(
+        "click",
+        function () {
+            input_file.click();
+        }
+    );
+    input_file.addEventListener(
+        "change",
+        function () {
+            const fd = new FormData();
+        	fd.append('img_path', this.files[0]);
+            fd.append('upimg', 'アップロード');
+        	fetch( '/room/', {
+            	method: 'POST',
+            	body: fd
+        	})
+        }
+    );
+
+    const upimg = document.getElementsByClassName("upimg")[0];
+    upimg.style.display = "none";
+
+    const ytbChange = document.createElement("li");
+    menu.prepend(ytbChange);
+    ytbChange.style.textDecoration = "underline";
+    ytbChange.style.color = "skyblue";
+    ytbChange.innerText = "背景動画変更";
+    ytbChange.addEventListener(
+        "click",
+        function () {
+            const url_ = window.prompt("ユーチューブのURLを入力して下さい。", url);
+            if (url_ != undefined && url_ != null && url_ != "") {
+                url = url_;
+                ytbId = getYtbId(url);
+                player.cueVideoById({videoId: ytbId});
+            }
+        }
+    )
+    
+    const ytbZButton = document.createElement("li");
+    menu.prepend(ytbZButton);
+    ytbZButton.style.border = "1px solid blue";
+    ytbZButton.style.borderRadius = "100%";
+    ytbZButton.innerText = "　";
+    ytbZButton.addEventListener(
+        "click",
+        function () {
+            if (div.style.zIndex == "-1") {
+                div.style.zIndex = "0";
+            } else {
+                div.style.zIndex = "-1";
+            }
+        }
+    );
+};
