@@ -219,7 +219,9 @@
         const parent = e.parentNode;
         const zoneChangeMyZone = document.querySelector(".zoneChangeMyZone").value;
         const myZoneHour = zoneChangeMyZone.substr(0, 2);
+        console.log("myZoneHour", myZoneHour);
         const myZoneMinute = zoneChangeMyZone.substr(2, 2);
+        console.log("myZoneMinute", myZoneMinute);
 
         const zoneChangeZone = parent.querySelector(".zoneChangeZone").value;
         const zoneHour = zoneChangeZone.substr(0, 2);
@@ -232,11 +234,22 @@
         const zoneChangeMinute = parent.querySelector(".zoneChangeMinute").value;
 
         let diffHour = String(Number(myZoneHour) + (Number(myZoneHour) - Number(zoneHour))).padStart(2, "0");
-        let diffMinute = String(Number(myZoneMinute) + (Number(myZoneMinute) - Number(zoneMinute))).padStart(2, "0");
+        let diffMinute = String(
+            Number(myZoneMinute) > Number(zoneMinute)
+                ? Number(zoneMinute) + (Number(zoneMinute) - Number(myZoneMinute)) * -1
+                : Number(myZoneMinute) + (Number(myZoneMinute) - Number(zoneMinute))
+        ).padStart(2, "0");
+
+        console.log("diffHour", diffHour);
+        console.log("diffMinute", diffMinute);
+
         if (Number(diffMinute) < 0) {
             diffHour = String(Number(diffHour) - 1).padStart(2, "0");
             diffMinute = String(Number(diffMinute) + 60).padStart(2, "0");
         }
+
+        console.log("diffHour", diffHour);
+        console.log("diffMinute", diffMinute);
 
         const dtStr = `${zoneChangeYear}-${zoneChangeMonth}-${zoneChangeDay} ${zoneChangeHour}:${zoneChangeMinute} GMT+${diffHour}${diffMinute}`;
         let dtDate = new Date(dtStr);
@@ -253,6 +266,7 @@
             dt += ":";
             dt += String(dtDate.getMinutes()).padStart(2, "0");
             dt += "_";
+            console.log(dtDate.toString());
             dt += dtDate.toString().split(" ").slice(-2).join(" ");
         }
         parent.querySelector(".zoneChangeRes").textContent = dt;
@@ -296,6 +310,7 @@
         } else if (e.target.parentNode.className === "zoneChangeRow") {
             dateWrite(e.target);
             const parent = e.target.parentNode;
+            console.log(parent);
             const val = {
                 NO: Number(parent.querySelector(".zoneChangeDelete").value)
                 , ZONE: parent.querySelector(".zoneChangeZone").value
@@ -306,6 +321,7 @@
                 , HOUR: parent.querySelector(".zoneChangeHour").value
                 , MINUTE: parent.querySelector(".zoneChangeMinute").value
             };
+            console.log(val);
             await put(val);
         }
 
