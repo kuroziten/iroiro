@@ -202,6 +202,9 @@ width: 256px;
 , #zoneChangeMain .zoneChangeMinute {
 width: 32px;
 }
+#zoneChangeMain span {
+color: white;
+}
 </style>
 `.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
     zoneChangeMain.style.position = "fixed";
@@ -210,7 +213,8 @@ width: 32px;
     zoneChangeMain.style.zIndex = "99999";
     zoneChangeMain.style.width = "90vw";
     zoneChangeMain.style.height = "90vh";
-    zoneChangeMain.style.backgroundColor = "green";
+    zoneChangeMain.style.backgroundColor = "black";
+    zoneChangeMain.style.border = "1px solid black";
     zoneChangeMain.id = "zoneChangeMain";
 
     document.body.append(zoneChangeMain);
@@ -240,16 +244,11 @@ width: 32px;
                 : Number(myZoneMinute) + (Number(myZoneMinute) - Number(zoneMinute))
         ).padStart(2, "0");
 
-        console.log("diffHour", diffHour);
-        console.log("diffMinute", diffMinute);
 
         if (Number(diffMinute) < 0) {
             diffHour = String(Number(diffHour) - 1).padStart(2, "0");
             diffMinute = String(Number(diffMinute) + 60).padStart(2, "0");
         };
-
-        console.log("diffHour", diffHour);
-        console.log("diffMinute", diffMinute);
 
         const dtStr = `${zoneChangeYear}-${zoneChangeMonth}-${zoneChangeDay} ${zoneChangeHour}:${zoneChangeMinute} GMT+${diffHour}${diffMinute}`;
         let dtDate = new Date(dtStr);
@@ -266,8 +265,9 @@ width: 32px;
             dt += ":";
             dt += String(dtDate.getMinutes()).padStart(2, "0");
             dt += "_";
-            console.log(dtDate.toString());
             dt += dtDate.toString().split(" ").slice(-2).join(" ");
+        } else {
+            dt = "";
         };
         parent.querySelector(".zoneChangeRes").textContent = dt;
     };
