@@ -13,7 +13,7 @@
                 const store = db.createObjectStore("myStore", { keyPath: "NO" });
                 const keys = ["NO", "TITLE", "ZONE", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE"];
                 keys.forEach(key => store.createIndex(key, key));
-            }
+            };
         };
 
         request.onsuccess = () => {
@@ -37,11 +37,11 @@
             request.onsuccess = () => {
                 const cursor = request.result;
                 if (cursor) {
-                    list.push(cursor.value)
+                    list.push(cursor.value);
                     cursor.continue();
                 } else {
                     r(list);
-                }
+                };
             };
             request.onerror = () => {
                 r(request.error);
@@ -76,19 +76,19 @@
                 if (cursor) {
                     if (zoneChangeRowList !== undefined) {
                         zoneChangeRowList[no].querySelector(".zoneChangeDelete").value = no;
-                    }
+                    };
                     const updateData = cursor.value;
                     if (updateData.NO !== no) {
                         cursor.delete();
                         updateData.NO = no;
                         store.add(updateData);
-                    }
+                    };
                     no++;
 
                     cursor.continue();
                 } else {
                     r(null);
-                }
+                };
             };
             request.onerror = () => {
                 r(request.error);
@@ -129,7 +129,7 @@
             const request = store.add(val);
             request.onsuccess = async () => {
                 r(null);
-            }
+            };
             request.onerror = () => {
                 console.log("削除失敗", request.error);
                 r(request.error);
@@ -144,7 +144,7 @@
             const request = store.put(val);
             request.onsuccess = async () => {
                 r(null);
-            }
+            };
             request.onerror = () => {
                 console.log("削除失敗", request.error);
                 r(request.error);
@@ -155,55 +155,55 @@
 
     const zoneChangeRowHtml = (await getAllData(db))
         .map(e => `
-		<div class="zoneChangeRow">
-			<button class="zoneChangeDelete" value="${e.NO}">削除</button>
-			<input type="text" class="zoneChangeZone" value="${e.ZONE}">
-			<input type="text" class="zoneChangeTitle" value="${e.TITLE}">
-			<input type="text" class="zoneChangeYear" value="${e.YEAR}">
-			<input type="text" class="zoneChangeMonth" value="${e.MONTH}">
-			<input type="text" class="zoneChangeDay" value="${e.DAY}">
-			<input type="text" class="zoneChangeHour" value="${e.HOUR}">
-			<input type="text" class="zoneChangeMinute" value="${e.MINUTE}">
-			<span class="zoneChangeRes"></span>
-		</div>
-	`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<"))
+<div class="zoneChangeRow">
+<button class="zoneChangeDelete" value="${e.NO}">削除</button>
+<input type="text" class="zoneChangeZone" value="${e.ZONE}">
+<input type="text" class="zoneChangeTitle" value="${e.TITLE}">
+<input type="text" class="zoneChangeYear" value="${e.YEAR}">
+<input type="text" class="zoneChangeMonth" value="${e.MONTH}">
+<input type="text" class="zoneChangeDay" value="${e.DAY}">
+<input type="text" class="zoneChangeHour" value="${e.HOUR}">
+<input type="text" class="zoneChangeMinute" value="${e.MINUTE}">
+<span class="zoneChangeRes"></span>
+</div>
+`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<"))
         .join("");
 
     let myZone = localStorage.getItem('myZone');
     if (myZone === null) {
         localStorage.setItem('myZone', '0900');
         myZone = '0900';
-    }
+    };
 
     const zoneChangeMain = document.createElement("div");
     zoneChangeMain.innerHTML = `
-		<button class="zoneChangeClose">閉じる</button>
-		<input type="text" class="zoneChangeMyZone" value="${myZone}">
-		${zoneChangeRowHtml}
-		<button class="zoneChangeAdd">追加</button>
-		<style>
-			#zoneChangeMain * {
-				font-size: 16px;
-			}
-			#zoneChangeMain input {
-				width: 64px;
-				color: black;
-				margin: 0;
-			}
-			#zoneChangeMain button {
-				color: black;
-			}
-			#zoneChangeMain .zoneChangeTitle {
-				width: 256px;
-			}
-			#zoneChangeMain .zoneChangeMonth
-			, #zoneChangeMain .zoneChangeDay
-			, #zoneChangeMain .zoneChangeHour
-			, #zoneChangeMain .zoneChangeMinute {
-				width: 32px;
-			}
-		</style>
-	`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
+<button class="zoneChangeClose">閉じる</button>
+<input type="text" class="zoneChangeMyZone" value="${myZone}">
+${zoneChangeRowHtml}
+<button class="zoneChangeAdd">追加</button>
+<style>
+#zoneChangeMain * {
+font-size: 16px;
+}
+#zoneChangeMain input {
+width: 64px;
+color: black;
+margin: 0;
+}
+#zoneChangeMain button {
+color: black;
+}
+#zoneChangeMain .zoneChangeTitle {
+width: 256px;
+}
+#zoneChangeMain .zoneChangeMonth
+, #zoneChangeMain .zoneChangeDay
+, #zoneChangeMain .zoneChangeHour
+, #zoneChangeMain .zoneChangeMinute {
+width: 32px;
+}
+</style>
+`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
     zoneChangeMain.style.position = "fixed";
     zoneChangeMain.style.inset = "0";
     zoneChangeMain.style.margin = "auto";
@@ -246,7 +246,7 @@
         if (Number(diffMinute) < 0) {
             diffHour = String(Number(diffHour) - 1).padStart(2, "0");
             diffMinute = String(Number(diffMinute) + 60).padStart(2, "0");
-        }
+        };
 
         console.log("diffHour", diffHour);
         console.log("diffMinute", diffMinute);
@@ -268,7 +268,7 @@
             dt += "_";
             console.log(dtDate.toString());
             dt += dtDate.toString().split(" ").slice(-2).join(" ");
-        }
+        };
         parent.querySelector(".zoneChangeRes").textContent = dt;
     };
 
@@ -285,7 +285,7 @@
                 <input type="text" class="zoneChangeHour" value="18">
                 <input type="text" class="zoneChangeMinute" value="30">
                 <span class="zoneChangeRes"></span>
-			`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
+`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
         document.querySelector(".zoneChangeAdd").before(zoneChangeRow);
         await add({
             NO: await getCount()
@@ -298,7 +298,7 @@
             , MINUTE: "30"
         });
         await ref();
-    }
+    };
 
     document.querySelectorAll(".zoneChangeZone").forEach(e => dateWrite(e));
 
@@ -323,7 +323,7 @@
             };
             console.log(val);
             await put(val);
-        }
+        };
 
     });
 
@@ -347,7 +347,7 @@
                 <input type="text" class="zoneChangeHour" value="">
                 <input type="text" class="zoneChangeMinute" value="">
                 <span class="zoneChangeRes"></span>
-			`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
+`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
             e.target.before(zoneChangeRow);
             await add({
                 NO: await getCount()
@@ -361,7 +361,7 @@
             });
             await ref();
 
-        }
+        };
     });
 
 })();
