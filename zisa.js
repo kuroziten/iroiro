@@ -70,21 +70,21 @@
             const store = transaction.objectStore("myStore");
             const request = store.openCursor();
             let no = 0;
-			const zoneChangeRowList = document.querySelector("#zoneChangeMain")?.querySelectorAll(".zoneChangeRow");
+            const zoneChangeRowList = document.querySelector("#zoneChangeMain")?.querySelectorAll(".zoneChangeRow");
             request.onsuccess = () => {
                 const cursor = request.result;
                 if (cursor) {
-					if (zoneChangeRowList !== undefined) {
-						zoneChangeRowList[no].querySelector(".zoneChangeDelete").value = no;                        
+                    if (zoneChangeRowList !== undefined) {
+                        zoneChangeRowList[no].querySelector(".zoneChangeDelete").value = no;
                     }
                     const updateData = cursor.value;
-					if (updateData.NO !== no) {
+                    if (updateData.NO !== no) {
                         cursor.delete();
-						updateData.NO = no;
-						store.add(updateData);						
+                        updateData.NO = no;
+                        store.add(updateData);
                     }
                     no++;
-					
+
                     cursor.continue();
                 } else {
                     r(null);
@@ -96,21 +96,21 @@
         });
     };
 
-	/* 削除する */
-	const del = async no => {
+    /* 削除する */
+    const del = async no => {
 
         const result = await new Promise(async r => {
 
 
             const transaction = db.transaction("myStore", "readwrite");
             const store = transaction.objectStore("myStore");
-			const request = store.delete(no);
+            const request = store.delete(no);
 
             request.onsuccess = async () => {
                 r(null);
             };
             request.onerror = () => {
-				console.log("削除失敗", request.error);
+                console.log("削除失敗", request.error);
                 r(request.error);
             };
 
@@ -118,12 +118,12 @@
 
         await ref();
 
-		return result;
+        return result;
 
-	};
+    };
 
-	const add = async val => {
-		return await new Promise(r => {
+    const add = async val => {
+        return await new Promise(r => {
             const transaction = db.transaction("myStore", "readwrite");
             const store = transaction.objectStore("myStore");
             const request = store.add(val);
@@ -131,14 +131,14 @@
                 r(null);
             }
             request.onerror = () => {
-				console.log("削除失敗", request.error);
+                console.log("削除失敗", request.error);
                 r(request.error);
             };
         });
-	};
+    };
 
-	const put = async val => {
-		return await new Promise(r => {
+    const put = async val => {
+        return await new Promise(r => {
             const transaction = db.transaction("myStore", "readwrite");
             const store = transaction.objectStore("myStore");
             const request = store.put(val);
@@ -146,11 +146,11 @@
                 r(null);
             }
             request.onerror = () => {
-				console.log("削除失敗", request.error);
+                console.log("削除失敗", request.error);
                 r(request.error);
             };
         });
-	};
+    };
 
 
     const zoneChangeRowHtml = (await getAllData(db))
@@ -169,11 +169,11 @@
 	`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<"))
         .join("");
 
-	let myZone = localStorage.getItem('myZone');
-	if (myZone === null) {
-		localStorage.setItem('myZone', '0900');
-		myZone = '0900';
-	}
+    let myZone = localStorage.getItem('myZone');
+    if (myZone === null) {
+        localStorage.setItem('myZone', '0900');
+        myZone = '0900';
+    }
 
     const zoneChangeMain = document.createElement("div");
     zoneChangeMain.innerHTML = `
@@ -215,8 +215,8 @@
 
     document.body.append(zoneChangeMain);
 
-	const dateWrite = e => {
-		const parent = e.parentNode;
+    const dateWrite = e => {
+        const parent = e.parentNode;
         const zoneChangeMyZone = document.querySelector(".zoneChangeMyZone").value;
         const myZoneHour = zoneChangeMyZone.substr(0, 2);
         const myZoneMinute = zoneChangeMyZone.substr(2, 2);
@@ -233,33 +233,32 @@
 
         let diffHour = String(Number(myZoneHour) + (Number(myZoneHour) - Number(zoneHour))).padStart(2, "0");
         let diffMinute = String(Number(myZoneMinute) + (Number(myZoneMinute) - Number(zoneMinute))).padStart(2, "0");
-		if (Number(diffMinute) < 0) {
-			diffHour = String(Number(diffHour) - 1).padStart(2, "0");
-			diffMinute = String(Number(diffMinute) + 60).padStart(2, "0");
-		}
+        if (Number(diffMinute) < 0) {
+            diffHour = String(Number(diffHour) - 1).padStart(2, "0");
+            diffMinute = String(Number(diffMinute) + 60).padStart(2, "0");
+        }
 
-		const dtStr = `${zoneChangeYear}-${zoneChangeMonth}-${zoneChangeDay} ${zoneChangeHour}:${zoneChangeMinute} GMT+${diffHour}${diffMinute}`;
-		let dtDate = new Date(dtStr);
+        const dtStr = `${zoneChangeYear}-${zoneChangeMonth}-${zoneChangeDay} ${zoneChangeHour}:${zoneChangeMinute} GMT+${diffHour}${diffMinute}`;
+        let dtDate = new Date(dtStr);
         let dt = dtDate.toString();
-		if (dt !== "Invalid Date") {
-			dt = "";
-			dt += dtDate.getFullYear();
-			dt += "-";
-			dt += String(dtDate.getMonth() + 1).padStart(2, "0");
-			dt += "-";
-			dt += String(dtDate.getDate()).padStart(2, "0");
-			dt += " ";
-			dt += String(dtDate.getHours()).padStart(2, "0");
-			dt += ":";
-			dt += String(dtDate.getMinutes()).padStart(2, "0");
-			dt += "_";
-			console.log(dtDate.toString());
-			dt += dtDate.toString().split(" ").slice(-2).join(" ");
-		}
+        if (dt !== "Invalid Date") {
+            dt = "";
+            dt += dtDate.getFullYear();
+            dt += "-";
+            dt += String(dtDate.getMonth() + 1).padStart(2, "0");
+            dt += "-";
+            dt += String(dtDate.getDate()).padStart(2, "0");
+            dt += " ";
+            dt += String(dtDate.getHours()).padStart(2, "0");
+            dt += ":";
+            dt += String(dtDate.getMinutes()).padStart(2, "0");
+            dt += "_";
+            dt += dtDate.toString().split(" ").slice(-2).join(" ");
+        }
         parent.querySelector(".zoneChangeRes").textContent = dt;
-	};
+    };
 
-	if (await getCount() === 0) {
+    if (await getCount() === 0) {
         const zoneChangeRow = document.createElement("div");
         zoneChangeRow.className = "zoneChangeRow";
         zoneChangeRow.innerHTML = `
@@ -273,7 +272,7 @@
                 <input type="text" class="zoneChangeMinute" value="30">
                 <span class="zoneChangeRes"></span>
 			`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
-		document.querySelector(".zoneChangeAdd").before(zoneChangeRow);
+        document.querySelector(".zoneChangeAdd").before(zoneChangeRow);
         await add({
             NO: await getCount()
             , ZONE: "0900"
@@ -285,20 +284,19 @@
             , MINUTE: "30"
         });
         await ref();
-	}
-	
-	document.querySelectorAll(".zoneChangeZone").forEach(e => dateWrite(e));
+    }
+
+    document.querySelectorAll(".zoneChangeZone").forEach(e => dateWrite(e));
 
     zoneChangeMain.addEventListener("input", async e => {
-		if (e.target.className === "zoneChangeMyZone") {
-			document.querySelectorAll(".zoneChangeZone").forEach(e => dateWrite(e));
+        if (e.target.className === "zoneChangeMyZone") {
+            document.querySelectorAll(".zoneChangeZone").forEach(e => dateWrite(e));
             localStorage.setItem('myZone', document.querySelector(".zoneChangeMyZone").value);
             myZone = '0900';
-		} else if (e.target.parentNode.className === "zoneChangeRow") {
-			dateWrite(e.target);
-			const parent = e.target.parentNode;
-			console.log(parent);
-			const val = {
+        } else if (e.target.parentNode.className === "zoneChangeRow") {
+            dateWrite(e.target);
+            const parent = e.target.parentNode;
+            const val = {
                 NO: Number(parent.querySelector(".zoneChangeDelete").value)
                 , ZONE: parent.querySelector(".zoneChangeZone").value
                 , TITLE: parent.querySelector(".zoneChangeTitle").value
@@ -307,26 +305,26 @@
                 , DAY: parent.querySelector(".zoneChangeDay").value
                 , HOUR: parent.querySelector(".zoneChangeHour").value
                 , MINUTE: parent.querySelector(".zoneChangeMinute").value
-			};
-			console.log(val);
-			await put(val);
-		}
+            };
+            await put(val);
+        }
 
     });
 
     zoneChangeMain.addEventListener("click", async e => {
-		if (e.target.className === "zoneChangeClose") {
-			document.querySelectorAll("#zoneChangeMain").forEach(e => e.remove());
-		} else if (e.target.className === "zoneChangeDelete") {
-			const no = Number(e.target.value);
-			e.target.parentNode.remove();
-			await del(no);
-		} else if (e.target.className === "zoneChangeAdd") {
-			const zoneChangeRow = document.createElement("div");
-			zoneChangeRow.className = "zoneChangeRow";
-			zoneChangeRow.innerHTML = `
+        if (e.target.className === "zoneChangeClose") {
+            document.querySelectorAll("#zoneChangeMain").forEach(e => e.remove());
+        } else if (e.target.className === "zoneChangeDelete") {
+            const no = Number(e.target.value);
+            e.target.parentNode.remove();
+            await del(no);
+        } else if (e.target.className === "zoneChangeAdd") {
+            const zoneChangeRow = document.createElement("div");
+            zoneChangeRow.className = "zoneChangeRow";
+            zoneChangeRow.innerHTML = `
                 <button class="zoneChangeDelete" value="">削除</button>
                 <input type="text" class="zoneChangeZone" value="">
+                <input type="text" class="zoneChangeTitle" value="">
                 <input type="text" class="zoneChangeYear" value="">
                 <input type="text" class="zoneChangeMonth" value="">
                 <input type="text" class="zoneChangeDay" value="">
@@ -334,7 +332,7 @@
                 <input type="text" class="zoneChangeMinute" value="">
                 <span class="zoneChangeRes"></span>
 			`.replace(/(>[\s\n]*)/g, ">").replace(/([\s\n]*<)/g, "<");
-			e.target.before(zoneChangeRow);
+            e.target.before(zoneChangeRow);
             await add({
                 NO: await getCount()
                 , ZONE: ""
@@ -345,9 +343,9 @@
                 , HOUR: ""
                 , MINUTE: ""
             });
-			await ref();
-			
-		}
+            await ref();
+
+        }
     });
 
 })();
