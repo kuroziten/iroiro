@@ -1,0 +1,47 @@
+// mapの定型文
+// Array(要素数).fill().map(e => 設定値)
+
+
+
+/** 例１．以下の配列の全ての要素にmapを使って "test" を設定しよう！ **/
+example1 = Array(3);
+/* 例１の回答は以下に記載 */
+example1 = example1.fill().map(e => "test");
+
+console.log(example1);
+
+
+
+/** 例２．以下の配列の全ての要素にmapを使って 要素数が5の配列 を設定しよう！ **/
+example2 = Array(3);
+/* 例２の回答は以下に記載 */
+example2 = example2.fill().map(e => Array(5));
+
+console.log(example2);
+
+
+
+/** 問１．以下の配列の全ての要素にmapを使って "ziten" を設定しよう！ **/
+test1 = Array(3);
+/* 問１の回答は以下に記載 */
+
+
+console.log(test1);
+
+
+
+/** 問２．以下の配列の全ての要素にmapを使って 要素数が4の配列 を設定しよう！ **/
+test2 = Array(3);
+/* 問２の回答は以下に記載 */
+
+
+console.log(test2);
+
+
+
+/** 問３．以下の配列の全ての要素にmapを使って 要素数が2かつ、値に"suika"が設定された配列 を設定しよう！ **/
+test3 = Array(3);
+/* 問３の回答は以下に記載 */
+
+
+console.log(test2);
