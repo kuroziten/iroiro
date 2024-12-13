@@ -1,0 +1,391 @@
+<html>
+
+<body>
+    <canvas id="can"></canvas>
+    <input type="button" id="start" value="start" /><br />
+    <input type="checkbox" id="sound" />
+    <label for="sound">Sound Off</label>
+
+    <script>
+        window.onload = () => {
+            //初期データ　ブロックのサイズや回転したときのアイテム数など
+            const BLOCK_SIZE = 20;
+            const SCREEN_X = 12;
+            const SCREEN_Y = 22;
+
+            //音楽を流す為のデータ初期化
+            let Gover = false;
+            let sound = new Audio();
+            sound.src = "https://bgmer.net/wp-content/uploads/2024/02/420_long_BPM108.mp3";
+            let se0 = new Audio();
+            se0.src = "https://soundeffect-lab.info/sound/battle/mp3/machine-hit1.mp3";
+            let se1 = new Audio();
+            se1.src = "https://soundeffect-lab.info/sound/various/mp3/tennis-racket2.mp3";
+            let se2 = new Audio();
+            se2.src = "https://soundeffect-lab.info/sound/anime/mp3/doon1.mp3";
+
+            //得点、落下速度の初期化（ミリ秒で指定するため１０００ミリ秒＝１秒で落下）
+            let clearcount = 0;
+            let ppoint = 0;
+            let deftime = 700;
+
+            const mapData = new class {
+                constructor() {
+                    this.mapReset();
+                }
+
+                /** マップデータ. */
+                map = [];
+
+                /** マップのリセット. */
+                mapReset = () => {
+                    this.map = Array(SCREEN_Y).fill().map(() => Array(SCREEN_X).fill(1).fill(0, 1, -1));
+                    this.map[this.map.length - 1] = this.map.slice(-1)[0].fill(1);
+                };
+
+                /** 揃ったか確認. */
+                deleteAction = () => {
+                    let cleracout = 0;
+                    for (let y = this.map.length - 2; y > 0; y--) {
+
+                        if (!this.map[y].some(e => e === 0)) {
+                            cleracout++;
+                            se1.play();
+                            for (let y2 = y; y2 > 0; y2--) {
+                                this.map[y2] = this.map[y2 - 1];
+                            }
+                            y++;
+                        }
+                    }
+                    return cleracout;
+                };
+            };
+
+            const mcolorObj = {
+                0: "white",
+                1: "silver",
+                2: "red",
+                3: "blue",
+                4: "green",
+                5: "gray",
+                6: "yellow",
+                7: "purple",
+                8: "white",
+            };
+
+            const bcolorObj = {
+                0: "white",
+                1: "black",
+                2: "black",
+                3: "black",
+                4: "black",
+                5: "black",
+                6: "black",
+                7: "black",
+                8: "black",
+            };
+
+            //０は、何も表示しないところ
+            const tetro2 = new class {
+                constructor() {
+                    this.pos.reset();
+                    this.currentTetro = this.getNewPattern();
+                    this.randomRotating();
+                    this.nextTetro = this.getNewPattern();
+                }
+
+                pos = new class {
+                    x = 5;
+                    y = -1;
+                    reset = () => {
+                        this.x = 5;
+                        this.y = -1;
+                    };
+                };
+
+                /* 現在のパターン. */
+                currentTetro = [];
+
+                /* 次のパターン. */
+                nextTetro = [];
+
+                /** パターンリスト. */
+                pattern = [
+                    [
+                        [2, 2],
+                        [2, 2],
+                    ], [
+                        [0, 3, 0],
+                        [0, 3, 0],
+                        [3, 3, 0],
+                    ], [
+                        [0, 4, 0],
+                        [0, 4, 0],
+                        [0, 4, 4],
+                    ], [
+                        [0, 0, 0, 0],
+                        [0, 5, 5, 0],
+                        [0, 0, 5, 5],
+                        [0, 0, 0, 0]
+                    ], [
+                        [0, 0, 0, 0],
+                        [0, 0, 6, 6],
+                        [0, 6, 6, 0],
+                        [0, 0, 0, 0]
+                    ], [
+                        [0, 7, 0],
+                        [7, 7, 7],
+                        [0, 0, 0]
+                    ], [
+                        [0, 0, 8, 0],
+                        [0, 0, 8, 0],
+                        [0, 0, 8, 0],
+                        [0, 0, 8, 0],
+                    ],
+                ];
+
+                /* 【関数】回転処理. */
+                rotating = () => {
+                    const newTetro = this.currentTetro.map(e => e.map(e => 0));
+
+                    for (let y = 0; y < this.currentTetro.length; y++) {
+                        for (let x = 0; x < this.currentTetro.length; x++) {
+                            newTetro[y][x] = this.currentTetro[this.currentTetro.length - 1 - x][y];
+                        }
+                    }
+
+                    for (let y = 0; y < newTetro.length; y++) {
+                        for (let x = 0; x < newTetro.length; x++) {
+                            if (newTetro[y][x] !== 0 && mapData.map[y + this.pos.y][x + this.pos.x] !== 0) {
+                                return;
+                            }
+                        }
+                    }
+                    this.currentTetro = newTetro;
+                };
+
+                /**
+                 * 【関数】ランダム回転処理.
+                 *
+                 * @returns 現在のTetroをランダムで回転させた値
+                 */
+                randomRotating = () => {
+                    // 1〜3の値を取得し、その回数回転させる
+                    const rondomCount = Math.floor(Math.random() * 3) + 1;
+                    for (let rc = 0; rc < rondomCount; rc++) {
+                        this.rotating();
+                    }
+                };
+
+                /* 【関数】新しいパターンの取得. */
+                setNewNextTetro = () => {
+                    // ポジションをリセット
+                    this.pos.reset();
+                    // 次のTetroを現在のTetroに代入
+                    this.currentTetro = this.nextTetro;
+                    // ランダムで回転させる
+                    this.randomRotating();
+                    // 次のTetroを新しくする
+                    this.nextTetro = this.getNewPattern();
+                };
+
+                /** 新しいパターンの取得. */
+                getNewPattern = () => this.pattern[Math.floor(Math.random() * this.pattern.length)];
+
+                /** ヒットしたかの確認（true: ヒット, false: ヒットじゃない）. */
+                hitCheck = (toY, toX) => {
+                    if (toY === undefined) {
+                        toY = 1;
+                        toX = 0;
+                    }
+                    for (let y = 0; y < this.currentTetro.length; y++) {
+                        for (let x = 0; x < this.currentTetro.length; x++) {
+                            if (this.currentTetro[y][x] !== 0 && mapData.map[y + this.pos.y + toY][x + this.pos.x + toX] !== 0) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+            };
+
+            //少しずつ早くするために、タイマーＩＤが必要になるので、宣言をする
+            let timerID;
+
+            //キャンバスと、コンテキストを作る。
+            let can = document.getElementById("can");
+            let con = can.getContext("2d");
+            let sOnOff = false;
+
+            //キャンバスのsizeを設定
+            can.width = SCREEN_X * BLOCK_SIZE + 300;
+            can.height = SCREEN_Y * BLOCK_SIZE;
+
+            //サウンドのオン、オフの制御
+            sound.addEventListener("click", () => {
+                sOnOff = !sOnOff;
+                sound.muted = sOnOff;
+            });
+
+            //スタートボタンが押された時にここから始まります。
+            start.addEventListener("click", () => {
+                sound.muted = sOnOff;
+                Gover = false;
+                //BGMをループさせる
+                sound.loop = true;
+                //BGMスタート
+                sound.play();
+                //ボリュームを落とす、最大値が１ですから、５％程度の音量に
+                sound.volume = 0.05;
+                //得点の初期化
+                ppoint = 0;
+                //早くなった落ちるスピードを初期値にする、一度クリアしてやらないと、前のタイマーが生きた状態になるので一度止めてます。
+                clearInterval(timerID);
+                deftime = 700;
+                //テトリスの表示関数
+                drawTetro();
+                timerID = setInterval(downtimer, deftime);
+            });
+
+            // 上のsetIntervalによりここが動き出します。
+            function downtimer() {
+
+                if (!tetro2.hitCheck(1, 0)) {
+                    tetro2.pos.y++;
+                } else {
+                    for (let y = 0; y < tetro2.currentTetro.length; y++) {
+                        for (let x = 0; x < tetro2.currentTetro.length; x++) {
+                            if (tetro2.currentTetro[y][x] !== 0) {
+                                mapData.map[tetro2.pos.y + y][tetro2.pos.x + x] = tetro2.currentTetro[y][x];
+                            }
+                        }
+                    }
+                    let cleracout = mapData.deleteAction();
+                    tetro2.setNewNextTetro();
+
+                    if (tetro2.hitCheck(0, 0)) {
+                        drawTetro();
+                        se2.play();
+                        clearInterval(timerID);
+                        return;
+                    }
+
+                    //落ち切ったので一列そろってる列を消して、カウントしてます。
+
+                    se0.volume = 0.3;
+                    se0.play();
+
+                    //得点を決めます。
+                    ppoint += [
+                        0,
+                        10,
+                        50,
+                        100,
+                        200,
+                        400,
+                    ][cleracout] || 0;
+
+                    //スピードアップの時間調整
+                    if (cleracout != 0) {
+                        clearcount++;
+                        deftime = 700 - 100 * Math.sqrt(clearcount);
+                        clearInterval(timerID);
+                        timerID = setInterval(downtimer, deftime);
+                    }
+                }
+
+                drawTetro();
+            }
+
+            //画面に表示させるための
+            function drawTetro() {
+                for (let y = 0; y < SCREEN_Y; y++) {
+                    for (let x = 0; x < SCREEN_X; x++) {
+                        let px = x * BLOCK_SIZE;
+                        let py = y * BLOCK_SIZE;
+
+                        let colorKey;
+                        if (
+                            x >= tetro2.pos.x
+                            && x <= tetro2.pos.x + tetro2.currentTetro.length - 1
+                            && y >= tetro2.pos.y
+                            && y <= tetro2.pos.y + tetro2.currentTetro.length - 1) {
+                            colorKey = tetro2.currentTetro[y - tetro2.pos.y][x - tetro2.pos.x] || mapData.map[y][x];
+                        } else {
+                            colorKey = mapData.map[y][x];
+                        }
+                        let mcolor = mcolorObj[colorKey];
+                        let bcolor = bcolorObj[colorKey];
+
+                        con.fillStyle = mcolor;
+                        con.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
+                        con.strokeStyle = bcolor;
+                        con.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
+                    }
+                }
+
+                //得点表示部分です。あとで作ったので直接数字を入れてます
+                con.fillStyle = "white";
+                con.fillRect(SCREEN_X * BLOCK_SIZE + 100, 16, 175, 35);
+
+                //色指定、フォント指定など文字に関する設定    
+                con.strokeStyle = 'bllack';
+                con.font = 'italic bold 35px serif';
+                con.textAlign = 'left';
+                con.strokeText("Score :", SCREEN_X * BLOCK_SIZE + 40, 50);
+                con.strokeText(ppoint, SCREEN_X * BLOCK_SIZE + 180, 50);
+                con.strokeText("NEXT ITEM", SCREEN_X * BLOCK_SIZE + 50, 200);
+
+                for (let y = 0; y < tetro2.nextTetro.length; y++) {
+                    for (let x = 0; x < tetro2.nextTetro.length; x++) {
+
+                        let px = x * BLOCK_SIZE;
+                        let py = y * BLOCK_SIZE;
+                        let colorKey = tetro2.nextTetro[y][x];
+                        let mcolor = mcolorObj[colorKey];
+                        let bcolor = bcolorObj[colorKey];
+                        con.fillStyle = mcolor;
+                        con.fillRect(SCREEN_X * BLOCK_SIZE + 100 + px, py + 250, BLOCK_SIZE, BLOCK_SIZE);
+                        con.strokeStyle = bcolor;
+                        con.strokeRect(SCREEN_X * BLOCK_SIZE + 100 + px, py + 250, BLOCK_SIZE, BLOCK_SIZE);
+                    }
+                }
+            }
+
+            //キーボード入力イベント発生。何が押されたかを見てます。
+            document.onkeydown = function (e) {
+                if (!Gover) {
+                    switch ((e || window.event).key) {
+                        case '4': //４が押された
+                        case 'a':
+                            !tetro2.hitCheck(0, -1) && tetro2.pos.x--;
+                            drawTetro();
+                            break;
+                        case '2':　//２が押された
+                        case 'x':
+                            !tetro2.hitCheck(1, 0) && tetro2.pos.y++;
+                            drawTetro();
+                            break;
+                        case '6':　//６が押された
+                        case 'd':
+                            !tetro2.hitCheck(0, 1) && tetro2.pos.x++;
+                            drawTetro();
+                            break;
+                        case '8':  //8が押された
+                        case 'w':
+                            tetro2.pos.y > 0 && !tetro2.hitCheck(-1, 0) && tetro2.pos.y--;
+                            drawTetro();
+                            break;
+                        case '5':  //５が押された
+                        case 's':
+                            tetro2.rotating();
+                            drawTetro();
+                            break;
+                    }
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>
