@@ -7,7 +7,9 @@ const config = { attributes: true, childList: true, subtree: true };
 // 変更が発見されたときに実行されるコールバック関数
 const callback = (mutationList, observer) => {
   for (const mutation of mutationList) {
-		mutation.target.closest(".talk.system")?.remove();
+		if (mutation.target.id === "talks") {
+			mutation.target.querySelectorAll(".system").forEach(e => e.remove());
+		}
   }
 };
 
@@ -16,4 +18,3 @@ const observer = new MutationObserver(callback);
 
 // 対象ノードの設定された変更の監視を開始
 observer.observe(targetNode, config);
-
