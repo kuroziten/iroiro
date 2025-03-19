@@ -10,6 +10,7 @@ document.querySelector('textarea').addEventListener('paste', e => {
         if (item.type.indexOf('image') !== -1) {
             event.preventDefault();
             file = item.getAsFile();
+            console.log(file);
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = e => {
@@ -49,16 +50,62 @@ document.querySelector('textarea').addEventListener('paste', e => {
                     const s = e.target.style;
                     s.backgroundColor = "white";
                 });
-                yes.addEventListener("click", e => {
+                yes.addEventListener("click", async e => {
                     const fd = new FormData();
                     fd.append('img_path', file);
                     fd.append('upimg', 'アップロード');
-                    fetch('/room/', {
+                    const response = await fetch('/room/', {
                         method: 'POST',
                         body: fd
                     });
-                    file = null;
                     d.remove();
+                    if (response.status !== 200) {
+                        console.log("圧縮する1", file);
+                        const quality = .5;
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+
+                        await new Promise(r => {
+                            reader.onload = function(event) {
+                                const img = new Image();
+                                img.src = event.target.result;
+                                img.onload = function() {
+                                    const canvas = document.createElement("canvas");
+                                    const ctx = canvas.getContext("2d");
+
+                                    // 画像のサイズを変更（ここでは幅を500pxに）
+                                    const maxWidth = 500;
+                                    const scale = maxWidth / img.width;
+                                    canvas.width = maxWidth;
+                                    canvas.height = img.height * scale;
+
+                                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                                    canvas.toBlob(
+                                        async (blob) => {
+                                            // BlobをFileに変換
+                                            const compressedFile = new File([blob], file.name, { type: "image/jpeg" });
+                                            const fd = new FormData();
+                                            fd.append('img_path', compressedFile);
+                                            fd.append('upimg', 'アップロード');
+
+                                            const response = await fetch('/room/', {
+                                                method: 'POST',
+                                                body: fd
+                                            });
+                                            r();
+                                        },
+                                        "image/jpeg", 
+                                        quality
+                                    );
+
+                                };
+                            };
+
+                        });
+
+                    }
+                    file = null;
                 });
                 no.addEventListener("click", e => {
                     file = null;
