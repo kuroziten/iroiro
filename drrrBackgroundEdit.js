@@ -1,12 +1,12 @@
 /** 設定項目. **/
 
 /* 文字の色(black, white, gray 等) */
-fontColor = "white";
+const fontColor = "white";
 
 /* 背景の画像. */
-bkImg = 'https://wallpaper.forfun.com/fetch/2b/2b4bbf1f858d298a58d4823b9c67a5b6.jpeg';
+const bkImg = 'https://wallpaper.forfun.com/fetch/2b/2b4bbf1f858d298a58d4823b9c67a5b6.jpeg';
 
-img = {
+const img = {
   /* アイコンを変えたい人の名前: その画像のURL. */
   "ヌイカ2": "https://yt3.googleusercontent.com/ytc/AIdro_mWueVn-u1oljZJNe-uO2ePQl0aO_OWU0B0zyYbSOExsCY",
   "ぺこら": "https://yt3.googleusercontent.com/ytc/AIdro_mWueVn-u1oljZJNe-uO2ePQl0aO_OWU0B0zyYbSOExsCY",
@@ -22,38 +22,62 @@ img = {
 }
 
 /** 処理. **/
-profname = document.querySelector(".profname");
-userprof = document.querySelector(".userprof").querySelector("img");
-userprof.style.width = "58px";
-document.body.style.backgroundImage = `url(${bkImg})`;
-document.body.style.backgroundSize = "cover";
-document.body.style.backgroundPosition = "center";
-document.body.style.backgroundRepeat = "no-repeat";
-document.body.style.backgroundAttachment = "fixed";
-updtFunc = () => {
+const profname = document.querySelector(".profname");
+const userprof = document.querySelector(".userprof").querySelector("img");
+
+const f = () => {
   talks.querySelectorAll("dt").forEach(e => {
-    s = e.style;
-    n = e.textContent;
-    res = img[e.textContent];
+    const name = e.textContent;
+    const res = img[e.textContent];
     if (res) {
-      s.background = `transparent url('${res}') no-repeat center top`
-      s.backgroundSize = "58px";
-      if (profname.textContent === n) {
+      e.style.background = `transparent url('${res}') no-repeat center top`
+      if (profname.textContent === name) {
         userprof.src = res;
       }
     }
   });	
 };
-updtFunc();
-new MutationObserver(e=>{
-  updtFunc();
-}).observe(talks,{childList:true});
-mbs = document.querySelector(".message_box").style;
-mbs.backgroundColor = "rgba(1,1,1,0)";
-mbs.color = fontColor;
-document.querySelector("#body").style.color = fontColor;
+
+f();
+new MutationObserver(e=>f()).observe(talks,{childList:true});
+
+document.querySelector(".submit").remove();
 
 document.head.innerHTML += `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&display=swap" rel="stylesheet">`;
-document.body.style.fontFamily = '"Hachi Maru Pop", cursive';
+
+const style = document.createElement("style");
+style.innerHTML = `
+body *:not(.fa) {
+font-family:"Hachi Maru Pop", cursive !important;
+color:${fontColor};
+}
+body {
+background-image:url(${bkImg});
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+background-attachment:fixed;
+}
+.message_box{
+background-color:rgba(1,1,1,0) !important;
+}
+textarea{
+resize:none;
+background-color: rgba(1,1,1,.5);
+}
+[name="logout"]{
+color:black !important;
+}
+.userprof img {
+width:58px;
+}
+dt{
+background-size:58px !important;
+}
+textarea:focus {
+outline: none;
+}
+`;
+document.body.append(style);
