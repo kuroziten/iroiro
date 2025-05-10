@@ -1,7 +1,7 @@
 /** 設定項目. **/
 
 /* 文字の色(black, white, gray 等) */
-fontColor = "black";
+fontColor = "white";
 
 /* 背景の画像. */
 bkImg = 'https://wallpaper.forfun.com/fetch/2b/2b4bbf1f858d298a58d4823b9c67a5b6.jpeg';
@@ -26,7 +26,10 @@ profname = document.querySelector(".profname");
 userprof = document.querySelector(".userprof").querySelector("img");
 userprof.style.width = "58px";
 document.body.style.backgroundImage = `url(${bkImg})`;
-document.body.style.backgroundSize = "100%";
+document.body.style.backgroundSize = "cover";
+document.body.style.backgroundPosition = "center";
+document.body.style.backgroundRepeat = "no-repeat";
+document.body.style.backgroundAttachment = "fixed";
 updtFunc = () => {
   talks.querySelectorAll("dt").forEach(e => {
     s = e.style;
