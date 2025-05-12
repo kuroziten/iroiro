@@ -2,12 +2,14 @@
 
 /* 背景の画像（横位置, 縦位置, 文字色, 背景画像URL） */
 const bkImgList = [
-    [0, -500, 'white', 'https://pbs.twimg.com/media/GqLDl4pbwAAL55o?format=jpg'],
+    [0, -600, 'white', 'https://pbs.twimg.com/media/GqLDl4pbwAAL55o?format=jpg'],
+    [0, -500, 'white', 'https://pbs.twimg.com/media/GqJ6WqqbwAA_Yil?format=jpg'],
+    [0, -500, 'white', 'https://pbs.twimg.com/media/Gkim34HbMAAcJm3?format=jpg'],
     [0, 0, 'white', 'https://wallpaper.forfun.com/fetch/2b/2b4bbf1f858d298a58d4823b9c67a5b6.jpeg'],
     [0, -500, 'black', 'https://pbs.twimg.com/media/GpIfTHNakAAVdto?format=jpg'],
 ];
 /* 背景の画像を切り替える秒数(ミリ秒). */
-const bkImgChangeInterval = 10000;
+const bkImgChangeInterval = 3000;
 
 /* 文字の色(black, white, gray 等) */
 const fontColor = "white";
@@ -129,10 +131,11 @@ left: 0;
 width: 100vw;
 height: 100vh;
 object-fit: contain;
-animation: infinite 5s forwards blackout;
+animation: infinite 5s forwards pekora;
 z-index: 99999;
+pointer-events: none;
 }
-@keyframes blackout {
+@keyframes pekora {
 0% {
 bottom: -100vh;
 left: 100vw;
@@ -157,6 +160,106 @@ left: -100vw;
 100% {
 bottom: -100vh;
 left: -100vw;
+}
+}
+[robokosan] {
+position: fixed;
+width: 100vw;
+height: 100vh;
+object-fit: contain;
+animation: infinite 30s forwards robokosan;
+z-index: 99999;
+pointer-events: none;
+}
+@keyframes robokosan {
+0% {
+bottom: 0vh;
+left: 200vw;
+}
+${(()=>{
+    let css = "";
+    let upFlg = true;
+    for (let i = 10; i <= 90; i++) {
+        if (upFlg) {
+            css += `${i}% {bottom: 1vh;}`;
+        } else {
+            css += `${i}% {bottom: -1vh;}`;
+        }
+        upFlg = !upFlg;
+    }
+    return css;
+})()}
+100% {
+bottom: 0vh;
+left: -100vw;
+}
+}
+[mococo] {
+position: fixed;
+width: 250%;
+height: 250%;
+object-fit: contain;
+animation: infinite 6s forwards mococo;
+z-index: 99999;
+pointer-events: none;
+rotate: 20deg;
+}
+@keyframes mococo {
+0% {
+bottom: -250%;
+left: -120%;
+}
+40% {
+bottom: -250%;
+left: -120%;
+}
+45% {
+bottom: -150%;
+left: -120%;
+}
+55% {
+bottom: -150%;
+left: -120%;
+}
+60% {
+bottom: -250%;
+left: -120%;
+}
+100% {
+bottom: -250%;
+left: -120%;
+}
+}
+[fuwawa] {
+position: fixed;
+width: 250%;
+height: 250%;
+object-fit: contain;
+animation: infinite 6s forwards fuwawa;
+z-index: 99999;
+pointer-events: none;
+rotate: -45deg;
+}
+@keyframes fuwawa {
+0% {
+bottom: -250%;
+right: -130%;
+}
+30% {
+bottom: -250%;
+}
+35% {
+bottom: -140%;
+}
+45% {
+bottom: -140%;
+}
+50% {
+bottom: -250%;
+}
+100% {
+bottom: -250%;
+right: -130%;
 }
 }
 `;
@@ -208,4 +311,22 @@ background-position: calc(50% + ${bkImgList[c][0]}px) calc(50% - ${bkImgList[c][
     pekora.src = "https://img2.animatetimes.com/2023/02/14139b5bdfbe588b6053d310c942060e640172bb40f858_60486246_db410305b4c590e1b8fa760351f2d8275169188a.png";
     pekora.setAttribute("pekora", "");
     document.body.append(pekora);
+})();
+(() => {
+    const robokosan = document.createElement("img");
+    robokosan.src = "https://hololive.hololivepro.com/wp-content/uploads/2020/06/Robocosan_pr-img_07.png";
+    robokosan.setAttribute("robokosan", "");
+    document.body.append(robokosan);
+})();
+(() => {
+    const mococo = document.createElement("img");
+    mococo.src = "https://hololive.hololivepro.com/wp-content/uploads/2021/07/Mococo-Abyssgard_pr-img_01.png";
+    mococo.setAttribute("mococo", "");
+    document.body.append(mococo);
+})();
+(() => {
+    const fuwawa = document.createElement("img");
+    fuwawa.src = "https://hololive.hololivepro.com/wp-content/uploads/2024/08/Fuwawa-Abyssgard_pr-img_01.png";
+    fuwawa.setAttribute("fuwawa", "");
+    document.body.append(fuwawa);
 })();
