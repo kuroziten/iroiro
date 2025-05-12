@@ -1,32 +1,33 @@
 // banする対象の名前
 banTargetName = [
-"スカイ"
+  "スカイ1"
 ];
 // banする対象のencip
 banTargetEncip = [
-"aaaaa"
+  "aaaaa"
 ];
 // kickする対象の名前
 kickTargetName = [
-"ヌイカ2"
+  "スカイ"
 ];
 // kickする対象のencip
 kickTargetEncip = [
-"CFT2i"
+  "CFT2i"
 ];
 
 json = await (await fetch("/ajax.php", {method:"post"})).json();
 users = Object.values(json.users).map(e => ({name: e.name, encip: e.encip?.split("").slice(0, 5), id: e.id}));
 
 for (u of users) {
-console.log(u.name);
-if (banTargetName.some(e => e === u.name) || banTargetEncip.some(e => e === u.encip)) {
-$.post("https://drrrkari.com/room/?ajax=1", {'ban_user': u.id, block: 1},
-         function(result) {
-});		
-} else if (kickTargetName.some(e => e === u.name) || kickTargetEncip.some(e => e === u.encip)) {
-$.post("https://drrrkari.com/room/?ajax=1", {'ban_user': u.id},
-         function(result) {
-});
-}
+  console.log(u.name);
+  if (banTargetName.some(e => e === u.name) || banTargetEncip.some(e => e === u.encip)) {
+    const formData = new FormData();
+    formData.append("ban_user", u.id);
+    formData.append("block", 1);
+    fetch("/room/?ajax=1", {method: "post", body: formData});
+  } else if (kickTargetName.some(e => e === u.name) || kickTargetEncip.some(e => e === u.encip)) {
+    const formData = new FormData();
+    formData.append("ban_user", u.id);
+    fetch("/room/?ajax=1", {method: "post", body: formData});
+  }
 }
