@@ -77,7 +77,7 @@ background-size:cover;
 background-repeat:no-repeat;
 background-attachment:fixed;
 display: block;
-position: absolute;
+position: relative;
 transition: color 1s;
 }
 
@@ -199,7 +199,7 @@ position: fixed;
 width: 250%;
 height: 250%;
 object-fit: contain;
-animation: infinite 6s forwards mococo;
+animation: infinite 5s forwards mococo;
 z-index: 99999;
 pointer-events: none;
 rotate: 20deg;
@@ -209,21 +209,17 @@ rotate: 20deg;
 bottom: -250%;
 left: -120%;
 }
-40% {
+20% {
 bottom: -250%;
-left: -120%;
 }
-45% {
-bottom: -150%;
-left: -120%;
+25% {
+bottom: -140%;
 }
-55% {
-bottom: -150%;
-left: -120%;
+65% {
+bottom: -140%;
 }
-60% {
+70% {
 bottom: -250%;
-left: -120%;
 }
 100% {
 bottom: -250%;
@@ -235,7 +231,7 @@ position: fixed;
 width: 250%;
 height: 250%;
 object-fit: contain;
-animation: infinite 6s forwards fuwawa;
+animation: infinite 5s forwards fuwawa;
 z-index: 99999;
 pointer-events: none;
 rotate: -45deg;
@@ -245,16 +241,16 @@ rotate: -45deg;
 bottom: -250%;
 right: -130%;
 }
-30% {
+20% {
 bottom: -250%;
 }
-35% {
+25% {
 bottom: -140%;
 }
-45% {
+65% {
 bottom: -140%;
 }
-50% {
+70% {
 bottom: -250%;
 }
 100% {
@@ -262,7 +258,31 @@ bottom: -250%;
 right: -130%;
 }
 }
+.body {
+overflow: hidden;
+position: relative;
+z-index: 1;
+}
+.body::after {
+content: '';
+display: block;
+position: absolute;
+width: 100%;
+height: 100%;
+z-index: -1;
+background: url(https://hololive.hololivepro.com/wp-content/uploads/2020/06/Nakiri-Ayame_pr-img_01.png);
+top: 0;
+left: 0px;
+background-position: center 16%;
+background-size: inherit;
+background-repeat: no-repeat;
+}
+
+}
 `;
+// background: url(https://hololive.hololivepro.com/wp-content/uploads/2020/06/Nakiri-Ayame_pr-img_01.png);
+// background-repeat: no-repeat;
+
 document.body.append(style);
 let flg = true;
 let c = 0;
@@ -306,18 +326,21 @@ background-position: calc(50% + ${bkImgList[c][0]}px) calc(50% - ${bkImgList[c][
         document.body.append(style);
     }
 })();
+/*
 (() => {
     const pekora = document.createElement("img");
     pekora.src = "https://img2.animatetimes.com/2023/02/14139b5bdfbe588b6053d310c942060e640172bb40f858_60486246_db410305b4c590e1b8fa760351f2d8275169188a.png";
     pekora.setAttribute("pekora", "");
     document.body.append(pekora);
 })();
+*/
 (() => {
     const robokosan = document.createElement("img");
     robokosan.src = "https://hololive.hololivepro.com/wp-content/uploads/2020/06/Robocosan_pr-img_07.png";
     robokosan.setAttribute("robokosan", "");
     document.body.append(robokosan);
 })();
+/*
 (() => {
     const mococo = document.createElement("img");
     mococo.src = "https://hololive.hololivepro.com/wp-content/uploads/2021/07/Mococo-Abyssgard_pr-img_01.png";
@@ -330,3 +353,4 @@ background-position: calc(50% + ${bkImgList[c][0]}px) calc(50% - ${bkImgList[c][
     fuwawa.setAttribute("fuwawa", "");
     document.body.append(fuwawa);
 })();
+*/
