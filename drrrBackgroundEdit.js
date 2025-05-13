@@ -66,10 +66,18 @@ body *:not(.fa) {
 font-family:"Hachi Maru Pop", cursive !important;
 color:white;
 text-shadow:
-1px 1px 0 #000,
--1px 1px 0 #000,
--1px -1px 0 #000,
-1px -1px 0 #000;
+  1px 1px 0 #000,
+  -1px 1px 0 #000,
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  2px 0 0 #000,
+  -2px 0 0 #000,
+  0 2px 0 #000,
+  0 -2px 0 #000,
+  2px 2px 0 #000,
+  -2px 2px 0 #000,
+  -2px -2px 0 #000,
+  2px -2px 0 #000;
 }
 body {
 z-index: 1;
@@ -107,10 +115,18 @@ background-color: rgba(1,1,1,.5);
 [name="logout"]{
 color:white !important;
 text-shadow:
-1px 1px 0 #000,
--1px 1px 0 #000,
--1px -1px 0 #000,
-1px -1px 0 #000;
+  1px 1px 0 #000,
+  -1px 1px 0 #000,
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  2px 0 0 #000,
+  -2px 0 0 #000,
+  0 2px 0 #000,
+  0 -2px 0 #000,
+  2px 2px 0 #000,
+  -2px 2px 0 #000,
+  -2px -2px 0 #000,
+  2px -2px 0 #000;
 background-color: rgba(1,1,1,.5);
 border-radius: 5px;
 border: 1px solid white;
