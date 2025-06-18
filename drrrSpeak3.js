@@ -5,6 +5,14 @@ function waitForAudioToEnd(audio) {
 	});
 }
 
+const speakObj = {
+	"ケロロ二等兵": 100,
+	"cent": 23,
+	"ヌイカ2": 8,
+	"ケンシロウ": 70,
+	"しんじまいたい": 23,
+};
+
 async function p() {
 	console.log("value", value);
 	const inputList = document.querySelectorAll("input");
@@ -15,11 +23,24 @@ async function p() {
 			if (e.value === value) {
 				const e = inputList[i - 1];
 				const msg = e.parentNode.querySelector("message").textContent;
+				const name = e.parentNode.querySelector("name").textContent;
+// 				let speak = 54;
+				let speak = 42;
+				if (name != "" && name in speakObj) {
+					speak = speakObj[name];
+				}
 				if (msg !== "") {
-					audio = new Audio(await(await(await fetch("http://localhost:3001?msg='" + e.parentNode.querySelector("message").textContent + "'")).text()));
+					const form = new FormData();
+					form.append("msg", msg);
+					form.append("speak", speak);
+					let res = await fetch("http://localhost:3001", {method: "post", body: form});
+					res = await res.text();
+					
+					const audio = new Audio(res);
 					audio.play();
 					await audio.play(); // 再生を開始
 					await waitForAudioToEnd(audio); // 再生終了まで待機					
+
 				}
 				value = inputList[i - 1].value;
 				break;
