@@ -370,127 +370,87 @@ padding-left: 5px;
         // 0: ユーザ, 1: 画像
         let mode = 0;
         // 画面更新テスト
-        await new Promise(r => {
+        await new Promise(async r => {
+            let inUserIndex = 0;
+            let outUserIndex = 0;
             if (mode  === 0) {
-
-                // ENCIPTからENCIP一覧を取得する
-                const transaction = db.transaction(ENCIPT, "readonly");
-                const store = transaction.objectStore(ENCIPT);
-                const index = store.index("ENCIPI");
-
-                const twelveHoursAgo = new Date();
-                twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
-
-                // 範囲指定（12時間前から現在まで）
-                const range = IDBKeyRange.bound(twelveHoursAgo, new Date());
-
-                // 結果を取得
-                const request = index.openCursor(range, "next");
-
-                let encipEIndex = 0;
-
-                let inUserIndex = 0;
-                let outUserIndex = 0;
-
-                request.onsuccess = function(event) {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        // encipを取得
-                        const encip = cursor.value.ENCIP;
-                        console.log("encip", encip);
-                        // encipのHTML要素を取得
-                        let encipE;
-                        if (inEncip.has(encip)) {
-                            encipE = newMenu.querySelector(`[encip="${encip}"]`);
-                            if (!encipE) {
-                                // 存在しない場合は作成して追加する
-                                encipE = document.createElement("div");
-                                encipE.setAttribute("encip", encip);
-                                inUser.append(encipE);
-                            }
-                            // 順番が変わった場合は並び替える
-                            if (inUser.querySelectorAll("[encip]")[inUserIndex] !== encipE) {
-                                if (inUserIndex === 0) {
-                                    inUser.prepend(encipE);
-                                } else if (inUser.querySelectorAll("[encip]")[inUserIndex] === undefined) {
-                                    inUser.append(encipE);
-                                } else {
-                                    inUser.querySelectorAll("[encip]")[inUserIndex].before(encipE);
-                                }
-                            }
-                            inUserIndex++;
-                        } else {
-                            encipE = newMenu.querySelector(`[encip="${encip}"]`);
-                            if (!encipE) {
-                                // 存在しない場合は作成して追加する
-                                encipE = document.createElement("div");
-                                encipE.setAttribute("encip", encip);
-                                outUser.append(encipE);
-                            }
-                            // 順番が変わった場合は並び替える
-                            if (outUser.querySelectorAll("[encip]")[outUserIndex] !== encipE) {
-                                if (outUserIndex === 0) {
-                                    outUser.prepend(encipE);
-                                } else if (outUser.querySelectorAll("[encip]")[outUserIndex] === undefined) {
-                                    outUser.append(encipE);
-                                } else {
-                                    outUser.querySelectorAll("[encip]")[outUserIndex].before(encipE);
-                                }
-                            }
-                            outUserIndex++;
+                for (const encipTO of await getEncipList(db, ENCIPT)) {
+                    // encipを取得
+                    const encip = encipTO.ENCIP;
+// encipのHTML要素を取得
+                    let encipE;
+                    if (inEncip.has(encip)) {
+                        encipE = newMenu.querySelector(`[encip="${encip}"]`);
+                        if (!encipE) {
+                            // 存在しない場合は作成して追加する
+                            encipE = document.createElement("div");
+                            encipE.setAttribute("encip", encip);
+                            inUser.append(encipE);
                         }
-
-                        // ユーザーが居るところを指定
-                        const transaction = db.transaction(USERT, "readonly");
-                        const store = transaction.objectStore(USERT);
-
-                        // Aさんを名指しで呼ぶ方法を指定
-                        const index = store.index("USERI1");
-                        const range = maxRangBound(encip);
-
-                        // Aさんを呼ぶ
-                        const res = index.openCursor(range, 'next');
-
-                        let i = 0;
-                        res.onsuccess = event => {
-                            const cursor = event.target.result;
-                            if (cursor) {
-                                const e = cursor.value;
-                                let userE = encipE.querySelector(`[no="${e.NO}"]`)
-                                if (!userE) {
-                                    userE = document.createElement("div");
-                                    userE.setAttribute("no", e.NO);
-                                    const userEC0 = document.createElement("div");
-                                    const userEC1 = document.createElement("div");
-                                    const userEC2 = document.createElement("div");
-
-                                    userEC1.textContent = e.ENCIP;
-                                    userEC2.textContent = e.NAME;
-
-                                    userE.append(userEC0);
-                                    userE.append(userEC1);
-                                    userE.append(userEC2);
-                                }
-                                userE.querySelector("div").textContent = formatDateWithWeekday(e.UPDT_DATE);
-                                (e => {
-                                    if (e !== userE) {
-                                        if (e === undefined) {
-                                            encipE.append(userE);
-                                        } else {
-                                            e.before(userE);
-                                        }
-                                    }
-                                })(encipE.querySelectorAll("[no]")[i]);
-                                i++;
-                                console.log(i, e.NAME, e.ENCIP);
-                                cursor.continue();
+                        // 順番が変わった場合は並び替える
+                        if (inUser.querySelectorAll("[encip]")[inUserIndex] !== encipE) {
+                            if (inUserIndex === 0) {
+                                inUser.prepend(encipE);
+                            } else if (inUser.querySelectorAll("[encip]")[inUserIndex] === undefined) {
+                                inUser.append(encipE);
+                            } else {
+                                inUser.querySelectorAll("[encip]")[inUserIndex].before(encipE);
                             }
-                        };
-                        cursor.continue();
+                        }
+                        inUserIndex++;
+                    } else {
+                        encipE = newMenu.querySelector(`[encip="${encip}"]`);
+                        if (!encipE) {
+                            // 存在しない場合は作成して追加する
+                            encipE = document.createElement("div");
+                            encipE.setAttribute("encip", encip);
+                            outUser.append(encipE);
+                        }
+                        // 順番が変わった場合は並び替える
+                        if (outUser.querySelectorAll("[encip]")[outUserIndex] !== encipE) {
+                            if (outUserIndex === 0) {
+                                outUser.prepend(encipE);
+                            } else if (outUser.querySelectorAll("[encip]")[outUserIndex] === undefined) {
+                                outUser.append(encipE);
+                            } else {
+                                outUser.querySelectorAll("[encip]")[outUserIndex].before(encipE);
+                            }
+                        }
+                        outUserIndex++;
                     }
-                };
-                transaction.oncomplete = () => r();
+
+                    let i = 0;
+                    for (const userTO of await getUserList(db, USERT, encip, maxRangBound)) {
+                        let userE = encipE.querySelector(`[no="${userTO.NO}"]`)
+                        if (!userE) {
+                            userE = document.createElement("div");
+                            userE.setAttribute("no", userTO.NO);
+                            const userEC0 = document.createElement("div");
+                            const userEC1 = document.createElement("div");
+                            const userEC2 = document.createElement("div");
+
+                            userEC1.textContent = userTO.ENCIP;
+                            userEC2.textContent = userTO.NAME;
+
+                            userE.append(userEC0);
+                            userE.append(userEC1);
+                            userE.append(userEC2);
+                        }
+                        userE.querySelector("div").textContent = formatDateWithWeekday(userTO.UPDT_DATE);
+                        (e => {
+                            if (e !== userE) {
+                                if (e === undefined) {
+                                    encipE.append(userE);
+                                } else {
+                                    e.before(userE);
+                                }
+                            }
+                        })(encipE.querySelectorAll("[no]")[i]);
+                        i++;
+                    }
+                }
             }
+            r();
         });
     };
     await act();
@@ -510,4 +470,60 @@ function formatDateWithWeekday(date = new Date()) {
     const s = pad(date.getSeconds());
 
     return `${y}-${m}-${d}(${w}) ${h}:${min}:${s}`;
+}
+
+async function getEncipList(db, ENCIPT) {
+    // ENCIPTからENCIP一覧を取得する
+    const transaction = db.transaction(ENCIPT, "readonly");
+    const store = transaction.objectStore(ENCIPT);
+    const index = store.index("ENCIPI");
+
+    const twelveHoursAgo = new Date();
+    twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
+
+    // 範囲指定（12時間前から現在まで）
+    const range = IDBKeyRange.bound(twelveHoursAgo, new Date());
+
+    // 結果を取得
+    const request = index.openCursor(range, "prev");
+    const result = [];
+    return await new Promise(resolve => {
+        request.onsuccess = event => {
+            const cursor = event.target.result;
+            if (cursor) {
+                result.push(cursor.value);
+                cursor.continue();
+            } else {
+                resolve(result);
+            }
+        }
+    });
+}
+
+async function getUserList(db, USERT, encip, maxRangBound) {
+    // ユーザーが居るところを指定
+    const transaction = db.transaction(USERT, "readonly");
+    const store = transaction.objectStore(USERT);
+
+    // Aさんを名指しで呼ぶ方法を指定
+    const index = store.index("USERI1");
+    const range = maxRangBound(encip);
+
+    // Aさんを呼ぶ
+    const res = index.openCursor(range, 'prev');
+
+    let i = 0;
+    const result = [];
+    return await new Promise(resolve => {
+        res.onsuccess = event => {
+            const cursor = event.target.result;
+            if (cursor) {
+                result.push(cursor.value);
+                cursor.continue();
+            } else {
+                resolve(result);
+            }
+        };
+    });
+
 }
