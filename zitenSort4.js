@@ -1,12 +1,5 @@
 list = [5, 3, 2, 4, 1];
-maxCount = 0;
 while (true) {
-  maxCount++;
-  if (maxCount > 100000) {
-    console.error("maxCount");
-    break;
-  }
-
   listDown = [];
   listUp = [];
   listUpFlg = false;
