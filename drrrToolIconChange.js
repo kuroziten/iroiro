@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name         デュラチャのアイコン変えるだけのやつ！
+// @namespace    http://tampermonkey.net/
+// @version      2025-08-08
+// @description  try to take over the world!
+// @author       You
+// @match        https://drrrkari.com/room/
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=drrrkari.com
+// @grant        none
+// @grant GM_xmlhttpRequest
+// ==/UserScript==
+
 (async function() {
 
     const target = {
@@ -154,6 +166,10 @@ dt[set] {
         }
     }
 }
+.userprof img {
+    max-width: 58px;
+    max-height: 58px;
+}
 `;
     document.body.append(style);
 
@@ -200,11 +216,11 @@ dt[set] {
         const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readwrite");
         const store = transaction.objectStore("iconChange20250806");
         const result = store.add({
-                name : name,
-                data: data,
-                url: url,
-                sort: sort
-            });
+            name : name,
+            data: data,
+            url: url,
+            sort: sort
+        });
         result.onsuccess = async () => {
             const id = event.target.result;
             const aaa = await getAll();
@@ -297,6 +313,7 @@ dt[set] {
                     await iconChange20250806DbPut(target.id, "url", input.value);
                     previewElm.src = event.target.value;
                     view.querySelector(".item[id='" + target.id + "']").querySelector("img").src = URL.createObjectURL(blob);
+                    vireRef(target.name);
                 } catch (e) {
                     alert("URLへの接続に失敗しました。ファイルまたはクリップボードから登録してください。");
                     urlPopover.hidePopover();
@@ -332,6 +349,7 @@ dt[set] {
                 await iconChange20250806DbPut(target.id, "data", blob);
                 await iconChange20250806DbPut(target.id, "url", "");
                 view.querySelector(".item[id='" + target.id + "']").querySelector("img").src = URL.createObjectURL(blob);
+                vireRef(target.name);
             } else {
                 previewElm.style.display = "none";
             }
@@ -360,7 +378,6 @@ dt[set] {
 
             const items = await navigator.clipboard.read();
 
-            breakLavel:
             for (const item of items) {
                 for (const type of item.types) {
                     if (type.startsWith("image/")) {
@@ -375,7 +392,8 @@ dt[set] {
                         await iconChange20250806DbPut(target.id, "url", "");
                         view.querySelector(".item[id='" + target.id + "']").querySelector("img").src = URL.createObjectURL(blob);
 
-                        break breakLavel;
+                        vireRef(target.name);
+                        return;
                     }
                 }
             }
@@ -394,6 +412,7 @@ dt[set] {
         itemElm.append(nameElm);
         nameElm.addEventListener("input", () => {
             iconChange20250806DbPut(id, "name", nameElm.value);
+            vireRef(nameElm.value);
         });
 
         // 画像表示
@@ -498,8 +517,9 @@ dt[set] {
                 const store = transaction.objectStore("iconChange20250806");
                 const deleteRequest = store.delete(id); // 削除したいキーを指定
                 deleteRequest.onsuccess = function() {
-                    alert("削除しました。");
+                    vireRef();
                     itemElm.remove();
+                    alert("削除しました。");
                 };
 
                 const maxSort = await iconChange20250806DbGetMaxSort();
@@ -597,12 +617,12 @@ dt[set] {
         });
     }
 
-    const viewRef = async () => {
+    (async () => {
         const list = await getAll();
         for (const e of list) {
             await addElmBaseAction(e.id, e.name, e.data, e.sort);
         }
-    };
+    })();
 
     const random3Char = () => {
         const chars = '0123456789';
@@ -612,32 +632,96 @@ dt[set] {
             result += chars[idx];
         }
         return result;
-    }
+    };
 
-    await viewRef();
+    const viewRefSub = (data, dtFlg, e) => {
+        const url = URL.createObjectURL(data);
+        if (dtFlg) {
+            if (e.getAttribute("set")) {
+                e.querySelector("img").src = url;
+            } else {
+                e.style.background = "unset";
+                e.setAttribute("set", "1");
+                const div = document.createElement("div");
+                e.prepend(div);
+                const img = document.createElement("img");
+                div.append(img);
+                img.src = url;
+            }
+        } else {
+            if (!e.querySelector("img").getAttribute("srcBk")) {
+                e.querySelector("img").setAttribute("srcBk", e.querySelector("img").src);
+            }
+            e.querySelector("img").src = url;
+        }
+    };
+    const vireRef = (_name) => {
 
-    setInterval(() => {
-        for (const dt of document.querySelectorAll("dt")) {
-            if (dt.getAttribute("set")) continue;
-            const name = dt.textContent;
+        if (_name) {
+            // nameが設定されている場合の処理
+            for (const e of [...talks.querySelectorAll("dt"), document.querySelector(".userprof")]) {
+                const dtFlg = e.tagName === "DT";
+                const name = dtFlg ? e.textContent : e.querySelector("div").textContent;
+                // _nameが空じゃないかつ、_nameとnameが異なる場合はスキップ
+                if (name !== _name) continue;
+                const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readonly");
+                const store = transaction.objectStore("iconChange20250806");
+                const index = store.index("nameIndex");
+                const request = index.get(name);
+                request.onsuccess = event => {
+                    const result = event.target.result;
+                    if (result && result.data) {
+                        viewRefSub(result.data, dtFlg, e);
+                        e.setAttribute("set", 1);
+                    }
+                };
+            }
+        } else {
+            // nameが設定されていない場合の処理
+            for (const e of [...talks.querySelectorAll("dt"), document.querySelector(".userprof")]) {
+                if (e.getAttribute("set")) continue;
+                const dtFlg = e.tagName === "DT";
+                const name = dtFlg ? e.textContent : e.querySelector("div").textContent;
+                const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readonly");
+                const store = transaction.objectStore("iconChange20250806");
+                const index = store.index("nameIndex");
+                const request = index.get(name);
+                request.onsuccess = event => {
+                    const result = event.target.result;
+                    if (result && result.data) {
+                        viewRefSub(result.data, dtFlg, e);
+                    }
+                };
+            }
+        }
+        // 存在しないやつの設定解除
+        for (const e of [...talks.querySelectorAll("dt"), document.querySelector(".userprof")]) {
+            if (!e.getAttribute("set")) continue;
+            const dtFlg = e.tagName === "DT";
+            const name = dtFlg ? e.textContent : e.querySelector("div").textContent;
             const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readonly");
             const store = transaction.objectStore("iconChange20250806");
             const index = store.index("nameIndex");
             const request = index.get(name);
-            console.log(name);
             request.onsuccess = event => {
                 const result = event.target.result;
-                if (result.data) {
-                    console.log("あざした");
-                    dt.style.background = "unset";
-                    dt.setAttribute("set", "1");
-                    const div = document.createElement("div");
-                    dt.prepend(div);
-                    const img = document.createElement("img");
-                    div.append(img);
-                    img.src = URL.createObjectURL(result.data);
+                if (!result?.data) {
+                    if (dtFlg) {
+                        e.style.background = "";
+                        e.removeAttribute("set");
+                        e.querySelector("div").remove();
+                    } else {
+                        e.querySelector("img").src = e.querySelector("img").getAttribute("srcBk");
+                    }
+
                 }
             };
         }
-    }, 1000);
+
+    };
+
+    vireRef();
+    new MutationObserver(e=>{
+        vireRef();
+    }).observe(talks,{childList:true});
 })();
