@@ -25,7 +25,7 @@
         const nowMinutes = new Date().getMinutes();
         if (nextMinutes === nowMinutes) {
             const res = await(await fetch("/ajax.php",{method:"post"})).json();
-            const user = Object.values(res.users).filter(e=>e.name=="ヌイカ2")[0];
+            const user = Object.values(res.users).filter(e=>e.name==myName)[0];
             const update = user.update;
             const dt = new Date(new Date("1970/01/01 00:00:00").getTime() + update * 1000 + 1000 * 60 * 60 * 9);
             const diffMinutes = (new Date().getTime() - dt.getTime()) / 1000 / 60;
