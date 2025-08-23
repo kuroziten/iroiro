@@ -29,16 +29,16 @@
     display: none;
 }
 
-#popover1:popover-open,
-.urlPopover:popover-open,
-.filePopover:popover-open,
-.clipboardPopover:popover-open
+/* メインポップオーバー */
+#popover1:popover-open
 {
     width: 80%;
     min-width: 1000px;
     height: 50%;
-    background-color: black;
+
     display: block;
+
+    background-color: black;
     margin: auto auto;
     border-color: white;
     border-style: dotted;
@@ -48,32 +48,61 @@
         color: white;
         background-color: transparent;
     }
+    & div {
+        height: 120px;
+    }
+    & img {
+        height: 100%;
+        max-height: unset;
+    }
+    & input {
+        background-color: transparent;
+    }
 }
 
+/* サブポップオーバー */
 .urlPopover:popover-open,
 .filePopover:popover-open,
 .clipboardPopover:popover-open
 {
     width: 85%;
     height: 55%;
+
     display: flex;
     flex-flow: column;
     align-items: center;
-    justify-content: space-around;
-    & * {
+    justify-content: start;
+
+    margin: auto auto;
+    background-color: black;
+    & div {
         color: white;
         cursor: pointer;
         max-height: 240px;
         width: 40%;
-        & img {
-            height: 100%;
-            object-fit: contain;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30%;
+        margin-top: 30px;
+        &:first-child {
+            height: 90px;
+        }
+        &:last-child {
+            width: 180px;
+            height: 180px;
+            & img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
         }
     }
-}
-
-#popover1:popover-open input {
-    background-color: transparent;
+    & input {
+        width: 30%;
+        height: 90px;
+        margin-top: 30px;
+    }
 }
 
 #popover1 > .item {
@@ -106,6 +135,25 @@
             width: 100%;
             object-fit: contain;
         }
+        &[ptn="1"] img {
+            object-fit: cover;
+        }
+        &[ptn="2"] img {
+            object-fit: cover;
+            object-position: top;
+        }
+        &[ptn="3"] img {
+            object-fit: cover;
+            object-position: right;
+        }
+        &[ptn="4"] img {
+            object-fit: cover;
+            object-position: bottom;
+        }
+        &[ptn="5"] img {
+            object-fit: cover;
+            object-position: left;
+        }
     }
     & > .operation {
         display: flex;
@@ -114,7 +162,7 @@
         justify-content: space-around;
         align-items: center;
         cursor: pointer;
-        & div {
+        & > div {
             flex: 1;
             height: 100%;
             display: flex;
@@ -145,8 +193,20 @@
                 height: 100%;
             }
         }
-        & *:hover {
+        & > div:nth-of-type(1):hover,
+        > div:nth-of-type(3):hover{
             background-color: #16281e;
+        }
+        & > .operationSubSub2 {
+            display: flex;
+            flex-flow: column;
+            & > * {
+                height: 50%;
+                border: 0;
+                &:hover {
+                    background-color: #16281e;
+                }
+            }
         }
     }
 }
@@ -166,10 +226,68 @@ dt[set] {
         }
     }
 }
-.userprof img {
-    max-width: 58px;
-    max-height: 58px;
+.userprof {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    & > div {
+        width: 58px;
+        height: 58px;
+        & img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        &[ptn="1"] img {
+            object-fit: cover;
+        }
+        &[ptn="2"] img {
+            object-fit: cover;
+            object-position: top;
+        }
+        &[ptn="3"] img {
+            object-fit: cover;
+            object-position: right;
+        }
+        &[ptn="4"] img {
+            object-fit: cover;
+            object-position: bottom;
+        }
+        &[ptn="5"] img {
+            object-fit: cover;
+            object-position: left;
+        }
+    }
 }
+
+dt {
+    & > div {
+        img {
+            width: 100%;
+            height: 100%;
+        }
+        &[ptn="1"] img {
+            object-fit: cover;
+        }
+        &[ptn="2"] img {
+            object-fit: cover;
+            object-position: top;
+        }
+        &[ptn="3"] img {
+            object-fit: cover;
+            object-position: right;
+        }
+        &[ptn="4"] img {
+            object-fit: cover;
+            object-position: bottom;
+        }
+        &[ptn="5"] img {
+            object-fit: cover;
+            object-position: left;
+        }
+    }
+}
+
 `;
     document.body.append(style);
 
@@ -207,7 +325,7 @@ dt[set] {
     };
 
     // DBに追加する関数
-    const iconChange20250806DbAdd = async (name, data, url, sort) => await new Promise(async resolve => {
+    const iconChange20250806DbAdd = async (name, data, url, sort, ptn) => await new Promise(async resolve => {
 
         if (!sort) {
             sort = await iconChange20250806DbGetMaxSort() + 1;
@@ -219,7 +337,8 @@ dt[set] {
             name : name,
             data: data,
             url: url,
-            sort: sort
+            sort: sort,
+            ptn: ptn
         });
         result.onsuccess = async () => {
             const id = event.target.result;
@@ -313,7 +432,7 @@ dt[set] {
                     await iconChange20250806DbPut(target.id, "url", input.value);
                     previewElm.src = event.target.value;
                     view.querySelector(".item[id='" + target.id + "']").querySelector("img").src = URL.createObjectURL(blob);
-                    vireRef(target.name);
+                    viewRef(target.name);
                 } catch (e) {
                     alert("URLへの接続に失敗しました。ファイルまたはクリップボードから登録してください。");
                     urlPopover.hidePopover();
@@ -349,7 +468,7 @@ dt[set] {
                 await iconChange20250806DbPut(target.id, "data", blob);
                 await iconChange20250806DbPut(target.id, "url", "");
                 view.querySelector(".item[id='" + target.id + "']").querySelector("img").src = URL.createObjectURL(blob);
-                vireRef(target.name);
+                viewRef(target.name);
             } else {
                 previewElm.style.display = "none";
             }
@@ -370,11 +489,12 @@ dt[set] {
         previewAreaElm.append(previewElm);
         previewElm.style.display = "none";
 
-        input.addEventListener("input", async event => {
+        input.addEventListener("paste", async event => {
 
             input.value = "";
             previewElm.src = "";
             previewElm.style.display = "none";
+            event.preventDefault();
 
             const items = await navigator.clipboard.read();
 
@@ -383,8 +503,6 @@ dt[set] {
                     if (type.startsWith("image/")) {
                         // Blob オブジェクトを取得
                         const blob = await item.getType('image/png');
-                        event.target.value =
-                            Array.from(new Uint8Array(await blob.arrayBuffer())).map(byte => byte.toString(2).padStart(8, '0')).join("");
                         previewElm.src = URL.createObjectURL(blob);
                         previewElm.style.display = "unset";
 
@@ -392,14 +510,14 @@ dt[set] {
                         await iconChange20250806DbPut(target.id, "url", "");
                         view.querySelector(".item[id='" + target.id + "']").querySelector("img").src = URL.createObjectURL(blob);
 
-                        vireRef(target.name);
+                        viewRef(target.name);
                         return;
                     }
                 }
             }
         });
     });
-    const addElmBaseAction = (id, name, data, sort) => {
+    const addElmBaseAction = (id, name, data, sort, ptn) => {
         const itemElm = document.createElement("div");
         itemElm.classList.add("item");
         itemElm.setAttribute("id", id);
@@ -412,12 +530,13 @@ dt[set] {
         itemElm.append(nameElm);
         nameElm.addEventListener("input", () => {
             iconChange20250806DbPut(id, "name", nameElm.value);
-            vireRef(nameElm.value);
+            viewRef(nameElm.value);
         });
 
         // 画像表示
         const viewAreaElm = document.createElement("div");
         viewAreaElm.classList.add("view");
+        viewAreaElm.setAttribute("ptn", ptn);
         itemElm.append(viewAreaElm);
 
         const viewElm = document.createElement("img");
@@ -486,8 +605,6 @@ dt[set] {
             target.url = result.url;
             target.data = result.data;
             if (target.data) {
-                clipboardPopover.querySelector("input").value =
-                    Array.from(new Uint8Array(await target.data.arrayBuffer())).map(byte => byte.toString(2).padStart(8, '0')).join("");;
                 clipboardPopover.querySelector("img").src = URL.createObjectURL(target.data);
                 clipboardPopover.querySelector("img").style.display = "unset";
             } else {
@@ -517,7 +634,7 @@ dt[set] {
                 const store = transaction.objectStore("iconChange20250806");
                 const deleteRequest = store.delete(id); // 削除したいキーを指定
                 deleteRequest.onsuccess = function() {
-                    vireRef();
+                    viewRef(nameElm.value);
                     itemElm.remove();
                     alert("削除しました。");
                 };
@@ -536,10 +653,13 @@ dt[set] {
             }
         });
 
+        const operationSubSub2Elm = document.createElement("div");
+        operationSubSub2Elm.classList.add("operationSubSub2");
+        operationSubElm.append(operationSubSub2Elm);
+
         const copyElm = document.createElement("div");
         copyElm.textContent = "コピーする";
-        copyElm.classList.add("copy");
-        operationSubElm.append(copyElm);
+        operationSubSub2Elm.append(copyElm);
         copyElm.addEventListener("click", async event => {
             const targetSort = Number(itemElm.getAttribute("sort"));
             const maxSort = await iconChange20250806DbGetMaxSort();
@@ -551,7 +671,7 @@ dt[set] {
                     const result = await get(id);
                     // name, data, url, sort
                     const newId = await iconChange20250806DbAdd(result.name, result.data, result.url, sort + 1);
-                    const newItemElm = addElmBaseAction(newId, result.name, result.data, sort + 1);
+                    const newItemElm = addElmBaseAction(newId, result.name, result.data, sort + 1, result.ptn);
                     itemElm.after(newItemElm);
                 } else {
                     // 繰り上げ
@@ -559,6 +679,36 @@ dt[set] {
                     elm.setAttribute("sort", sort + 1);
                 }
             }
+        });
+
+        const ptnElm = document.createElement("select");
+        operationSubSub2Elm.append(ptnElm);
+
+        const ptnElmAdd = (t, v) => {
+            const ptnElmOption = document.createElement("option");
+            ptnElmOption.textContent = t;
+            ptnElmOption.value = v;
+            ptnElm.append(ptnElmOption);
+        };
+
+        ptnElmAdd("全体表示", 0);
+        ptnElmAdd("中央表示", 1);
+        ptnElmAdd("上部表示", 2);
+        ptnElmAdd("右側表示", 3);
+        ptnElmAdd("下部表示", 4);
+        ptnElmAdd("左側表示", 5);
+
+        if (ptn === undefined) {
+            ptnElm.value = 0;
+        } else {
+            ptnElm.value = ptn;
+        }
+
+        ptnElm.addEventListener("change", async event => {
+            const ptn = Number(event.target.value);
+            await iconChange20250806DbPut(id, "ptn", ptn);
+            viewAreaElm.setAttribute("ptn", ptn);
+            viewRef(nameElm.value);
         });
 
         const swapElm = document.createElement("div");
@@ -587,9 +737,9 @@ dt[set] {
     };
 
     addElm.addEventListener("click", async () => {
-        const id = await iconChange20250806DbAdd("なまえ", null, null, null);
+        const id = await iconChange20250806DbAdd("なまえ", null, null, null, "0");
         const result = await get(id);
-        await addElmBaseAction(id, "なまえ", null, result.sort);
+        addElmBaseAction(id, "なまえ", null, result.sort, "0");
     });
 
     // 最初の一回だけ走るやつだにょ
@@ -620,7 +770,7 @@ dt[set] {
     (async () => {
         const list = await getAll();
         for (const e of list) {
-            await addElmBaseAction(e.id, e.name, e.data, e.sort);
+            await addElmBaseAction(e.id, e.name, e.data, e.sort, e.ptn);
         }
     })();
 
@@ -634,11 +784,21 @@ dt[set] {
         return result;
     };
 
-    const viewRefSub = (data, dtFlg, e) => {
+    (() => {
+        const div = document.createElement("div");
+        const userprof = document.querySelector(".userprof");
+        userprof.prepend(div);
+        const imgElmg = userprof.querySelector("img");
+        div.append(imgElmg);
+        imgElmg.setAttribute("srcBk", imgElmg.src);
+    })();
+
+    const viewRefSub = (data, ptn, dtFlg, e) => {
         const url = URL.createObjectURL(data);
         if (dtFlg) {
             if (e.getAttribute("set")) {
-                e.querySelector("img").src = url;
+                e.querySelector("div").setAttribute("ptn", ptn);
+                e.querySelector("div").querySelector("img").src = url;
             } else {
                 e.style.background = "unset";
                 e.setAttribute("set", "1");
@@ -646,22 +806,20 @@ dt[set] {
                 e.prepend(div);
                 const img = document.createElement("img");
                 div.append(img);
+                div.setAttribute("ptn", ptn);
                 img.src = url;
             }
         } else {
-            if (!e.querySelector("img").getAttribute("srcBk")) {
-                e.querySelector("img").setAttribute("srcBk", e.querySelector("img").src);
-            }
+            e.querySelector("div").setAttribute("ptn", ptn);
             e.querySelector("img").src = url;
         }
     };
-    const vireRef = (_name) => {
-
+    const viewRef = (_name) => {
         if (_name) {
             // nameが設定されている場合の処理
             for (const e of [...talks.querySelectorAll("dt"), document.querySelector(".userprof")]) {
                 const dtFlg = e.tagName === "DT";
-                const name = dtFlg ? e.textContent : e.querySelector("div").textContent;
+                const name = dtFlg ? e.textContent : e.querySelector(".profname").textContent;
                 // _nameが空じゃないかつ、_nameとnameが異なる場合はスキップ
                 if (name !== _name) continue;
                 const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readonly");
@@ -671,7 +829,7 @@ dt[set] {
                 request.onsuccess = event => {
                     const result = event.target.result;
                     if (result && result.data) {
-                        viewRefSub(result.data, dtFlg, e);
+                        viewRefSub(result.data, result.ptn ? result.ptn : 0, dtFlg, e);
                         e.setAttribute("set", 1);
                     }
                 };
@@ -681,7 +839,7 @@ dt[set] {
             for (const e of [...talks.querySelectorAll("dt"), document.querySelector(".userprof")]) {
                 if (e.getAttribute("set")) continue;
                 const dtFlg = e.tagName === "DT";
-                const name = dtFlg ? e.textContent : e.querySelector("div").textContent;
+                const name = dtFlg ? e.textContent : e.querySelector(".profname").textContent;
                 const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readonly");
                 const store = transaction.objectStore("iconChange20250806");
                 const index = store.index("nameIndex");
@@ -689,7 +847,7 @@ dt[set] {
                 request.onsuccess = event => {
                     const result = event.target.result;
                     if (result && result.data) {
-                        viewRefSub(result.data, dtFlg, e);
+                        viewRefSub(result.data, result.ptn ? result.ptn : 0, dtFlg, e);
                     }
                 };
             }
@@ -698,7 +856,7 @@ dt[set] {
         for (const e of [...talks.querySelectorAll("dt"), document.querySelector(".userprof")]) {
             if (!e.getAttribute("set")) continue;
             const dtFlg = e.tagName === "DT";
-            const name = dtFlg ? e.textContent : e.querySelector("div").textContent;
+            const name = dtFlg ? e.textContent : e.querySelector(".profname").textContent;
             const transaction = iconChange20250806Db.transaction(["iconChange20250806"], "readonly");
             const store = transaction.objectStore("iconChange20250806");
             const index = store.index("nameIndex");
@@ -720,8 +878,8 @@ dt[set] {
 
     };
 
-    vireRef();
+    viewRef();
     new MutationObserver(e=>{
-        vireRef();
+        viewRef();
     }).observe(talks,{childList:true});
 })();
