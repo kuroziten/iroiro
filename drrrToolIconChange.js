@@ -559,11 +559,15 @@ dt {
             colorElm.setAttribute("data-jscolor", "");
             colorElm.setAttribute(name, "");
             e.append(colorElm);
+
+            const colorPickerElm = document.createElement("div");
+            e.append(colorPickerElm);
+
             target[name + "Picker"] = new jscolor(colorElm, {
                 value: '#00ccff',
                 position: 'right',
                 palette: 'classic',
-                container: bkChangePopover,
+                container: colorPickerElm,
                 smartPosition: false,
                 forcePosition: true
             });
