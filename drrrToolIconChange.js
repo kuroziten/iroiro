@@ -24,7 +24,8 @@
 #popover1,
 .urlPopover,
 .filePopover,
-.clipboardPopover
+.clipboardPopover,
+.bkChangePopover
 {
     display: none;
 }
@@ -63,7 +64,8 @@
 /* サブポップオーバー */
 .urlPopover:popover-open,
 .filePopover:popover-open,
-.clipboardPopover:popover-open
+.clipboardPopover:popover-open,
+.bkChangePopover:popover-open
 {
     width: 85%;
     height: 55%;
@@ -75,7 +77,13 @@
 
     margin: auto auto;
     background-color: black;
-    & div {
+
+    border-color: white;
+    border-style: dotted;
+    border-width: 2px;
+    border-radius: 5px;
+
+    & > .popChildDiv {
         color: white;
         cursor: pointer;
         max-height: 240px;
@@ -157,7 +165,6 @@
     }
     & > .operation {
         display: flex;
-        width: 20%;
         flex-flow: column;
         justify-content: space-around;
         align-items: center;
@@ -197,7 +204,8 @@
         > div:nth-of-type(3):hover{
             background-color: #16281e;
         }
-        & > .operationSubSub2 {
+        & > .operationSubSub2
+        ,  > .operationSubSub1{
             display: flex;
             flex-flow: column;
             & > * {
@@ -290,6 +298,14 @@ dt {
 
 `;
     document.body.append(style);
+
+    /* カラーピッカー */
+    await new Promise(resolve => {
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js";
+        document.head.append(script);
+        script.onload = () => resolve();
+    });
 
     // DB作成 & 取得
     const iconChange20250806Db = await new Promise(resolve => {
@@ -402,6 +418,7 @@ dt {
 
         const titleElm = document.createElement("div");
         titleElm.textContent = title;
+        titleElm.classList.add("popChildDiv");
         popover.append(titleElm);
 
         return popover;
@@ -417,6 +434,7 @@ dt {
         e.append(input);
 
         const previewAreaElm = document.createElement("div");
+        previewAreaElm.classList.add("popChildDiv");
         e.append(previewAreaElm);
 
         const previewElm = document.createElement("img");
@@ -452,6 +470,7 @@ dt {
         e.append(input);
 
         const previewAreaElm = document.createElement("div");
+        previewAreaElm.classList.add("popChildDiv");
         e.append(previewAreaElm);
 
         const previewElm = document.createElement("img");
@@ -483,6 +502,7 @@ dt {
         e.append(input);
 
         const previewAreaElm = document.createElement("div");
+        previewAreaElm.classList.add("popChildDiv");
         e.append(previewAreaElm);
 
         const previewElm = document.createElement("img");
@@ -517,6 +537,58 @@ dt {
             }
         });
     });
+
+    const bkChangePopover = createPopover("bkChangePopover", "背景の設定をして下さい。");
+    f(bkChangePopover, async e => {
+
+        /*
+            メイン
+                色
+                画像
+            サブ
+                色
+            背景情報をコピー、背景情報をペースト
+        */
+        const colorEdit = (title, name) => {
+            const titleElm = document.createElement("div");
+            titleElm.textContent = title;
+            titleElm.classList.add("popChildDiv");
+            e.append(titleElm);
+            const colorElm = document.createElement("input");
+            colorElm.type = "text";
+            colorElm.setAttribute("data-jscolor", "");
+            colorElm.setAttribute(name, "");
+            e.append(colorElm);
+            target[name + "Picker"] = new jscolor(colorElm, {
+                value: '#00ccff',
+                position: 'right',
+                palette: 'classic',
+                container: bkChangePopover,
+                smartPosition: false,
+                forcePosition: true
+            });
+            colorElm.addEventListener("input", async e => {
+                await iconChange20250806DbPut(target.id, name, e.target.value);
+                target[name] = e.target.value;
+                if (!e.target.value) {
+                    target[name + "Picker"].fromString("#FFFFFF");
+                    e.target.value = "";
+                }
+                viewRef(target.name);
+            });
+            colorElm.addEventListener("blur", e => {
+                if (!target[name]) {
+                    e.target.value = "";
+                }
+            });
+        };
+
+        colorEdit("メインカラー", "mainColor");
+        colorEdit("サブカラー", "subColor");
+        colorEdit("フォントカラー", "fontColor");
+
+    });
+
     const addElmBaseAction = (id, name, data, sort, ptn) => {
         const itemElm = document.createElement("div");
         itemElm.classList.add("item");
@@ -575,7 +647,6 @@ dt {
         const inst2Elm = document.createElement("div");
         inst2Elm.textContent = "ファイル";
         operationElm.append(inst2Elm);
-        inst2Elm.addEventListener("click", () => filePopover.showPopover());
         inst2Elm.addEventListener("click", async () => {
             target.id = id;
             const result = await get(id);
@@ -597,7 +668,6 @@ dt {
         const inst3Elm = document.createElement("div");
         inst3Elm.textContent = "クリップボード";
         operationElm.append(inst3Elm);
-        inst3Elm.addEventListener("click", () => clipboardPopover.showPopover());
         inst3Elm.addEventListener("click", async () => {
             target.id = id;
             const result = await get(id);
@@ -651,6 +721,50 @@ dt {
             } else {
                 alert("削除を中断しました。");
             }
+        });
+
+        const operationSubSub1Elm = document.createElement("div");
+        operationSubSub1Elm.classList.add("operationSubSub1");
+        operationSubElm.append(operationSubSub1Elm);
+
+        const bkChangeElm = document.createElement("div");
+        bkChangeElm.textContent = "背景変更";
+        operationSubSub1Elm.append(bkChangeElm);
+        bkChangeElm.addEventListener("click", async () => {
+            target.id = id;
+            const result = await get(id);
+            target.name = result.name;
+            target.url = result.url;
+            target.data = result.data;
+
+            target.mainColor = result.mainColor;
+            if (result.mainColor) {
+                bkChangePopover.querySelector("[mainColor]").value = result.mainColor;
+                target.mainColorPicker.fromString(result.mainColor);
+            } else {
+                target.mainColorPicker.fromString("#FFFFFF");
+                bkChangePopover.querySelector("input").value = "";
+            }
+
+            target.subColor = result.subColor;
+            if (result.subColor) {
+                bkChangePopover.querySelector("[subColor]").value = result.subColor;
+                target.subColorPicker.fromString(result.subColor);
+            } else {
+                target.subColorPicker.fromString("#FFFFFF");
+                bkChangePopover.querySelector("input").value = "";
+            }
+
+            target.fontColor = result.fontColor;
+            if (result.fontColor) {
+                bkChangePopover.querySelector("[fontColor]").value = result.fontColor;
+                target.fontColorPicker.fromString(result.fontColor);
+            } else {
+                target.fontColorPicker.fromString("#FFFFFF");
+                bkChangePopover.querySelector("input").value = "";
+            }
+
+            bkChangePopover.showPopover();
         });
 
         const operationSubSub2Elm = document.createElement("div");
@@ -793,7 +907,11 @@ dt {
         imgElmg.setAttribute("srcBk", imgElmg.src);
     })();
 
-    const viewRefSub = (data, ptn, dtFlg, e) => {
+    // const viewRefSub = (data, ptn, dtFlg, e) => {
+    const viewRefSub = (result, e) => {
+        const data = result.data;
+        const ptn = result.ptn;
+        const dtFlg = e.tagName === "DT";
         const url = URL.createObjectURL(data);
         if (dtFlg) {
             if (e.getAttribute("set")) {
@@ -808,6 +926,34 @@ dt {
                 div.append(img);
                 div.setAttribute("ptn", ptn);
                 img.src = url;
+            }
+            const mainColor = result.mainColor;
+            const subColor = result.subColor;
+            const fontColor = result.fontColor;
+            const dd = e.nextSibling;
+            if (!dd.querySelector("img")) {
+                const body = dd.querySelector(".body");
+                if (mainColor) {
+                    body.style.background = mainColor;
+                } else {
+                    body.style.background = "";
+                }
+
+                const subElm = dd.querySelector(".body").previousElementSibling;
+                if (!subElm.getAttribute("background")) {
+                    subElm.setAttribute("background", subElm.style.background);
+                }
+                if (subColor) {
+                    subElm.style.background = subColor;
+                } else {
+                    subElm.style.background = subElm.getAttribute("background");
+                }
+
+                if (fontColor) {
+                    body.style.color = fontColor;
+                } else {
+                    body.style.color = "";
+                }
             }
         } else {
             e.querySelector("div").setAttribute("ptn", ptn);
@@ -829,7 +975,7 @@ dt {
                 request.onsuccess = event => {
                     const result = event.target.result;
                     if (result && result.data) {
-                        viewRefSub(result.data, result.ptn ? result.ptn : 0, dtFlg, e);
+                        viewRefSub(result, e);
                         e.setAttribute("set", 1);
                     }
                 };
@@ -847,7 +993,7 @@ dt {
                 request.onsuccess = event => {
                     const result = event.target.result;
                     if (result && result.data) {
-                        viewRefSub(result.data, result.ptn ? result.ptn : 0, dtFlg, e);
+                        viewRefSub(result, e);
                     }
                 };
             }
