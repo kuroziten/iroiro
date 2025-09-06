@@ -130,7 +130,6 @@ dl > dd > p > a > img {
     /* チャット送信処理 */
     let refFlg = false;
     (textarea => {
-        console.log("textarea", textarea);
         let isComposing = false;
         textarea.addEventListener("compositionstart", () => isComposing = true);
         textarea.addEventListener("compositionend", () => isComposing = false);
@@ -173,12 +172,11 @@ dl > dd > p > a > img {
     /**************************************************/
     /* 内緒ボタンを押した時のやつ */
     const pmbtnClickAction = tUid => {
-        console.log("pmbtnClickAction");
         pm_box.style.display = "block";
         pmtalks.innerHTML = "";
         const pms = Object.values(ajax.pm);
         for (const pm of pms) {
-            if (pm.uid !== tUid && pm.uid !== myUid) continue;
+            if (pm.uid !== tUid && pm.dest!== tUid) continue;
             const talkChat = body.talkBaseChat.cloneNode(true);
             talkChat.id = pm.id;
             talkChat.classList.add(pm.icon);
@@ -222,7 +220,6 @@ dl > dd > p > a > img {
     let previousPm = null;
     const ref = async () => {
         ajax = await(await fetch("/ajax.php", {method:"post"})).json();
-        customAction(ajax);
         const users = Object.values(ajax.users);
         const talks = Object.values(ajax.talks);
         const pms = Object.values(ajax.pm);
@@ -237,7 +234,6 @@ dl > dd > p > a > img {
         if (pms.length > 0) {
             pm = pms.slice(-1)[0];
         }
-        console.log(pms);
         if (pm_box.style.display === "" && previousPm.id != pm.id) {
             pmbtnClickAction(pm.uid);
         }
