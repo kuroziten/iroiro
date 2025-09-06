@@ -9,6 +9,7 @@
 // @grant        none
 // ==/UserScript==
 
+/** デュラチャのベース処理 */
 (async function() {
     /**************************************************/
     /**************************************************/
@@ -20,9 +21,11 @@
     /* CSSの更新 */
     const style = document.createElement("style");
     style.innerHTML = `
-dl > dd > div {
+
+#talks > dl > dd > div {
     margin: -16px 0 0 !important;
 }
+
 dl > dd > div > div {
     position: relative;
     top: 39px;
@@ -32,8 +35,35 @@ dl > dd > div > div {
 }
 dl > dd > div > div > div {
     height: 100%;
+}
+#talks dl > dd > div > div > div {
     background: url(https://drrrkari.com/css/tail.png) left 0px no-repeat;
 }
+
+#pmtalks dl > dd > div > div {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 16px 22px;
+    border-color: transparent transparent rgb(91, 160, 255) transparent;
+    position: relative;
+    float: left;
+    top: 21px;
+    left: -3px;
+}
+
+#pmtalks dl > dd > div > div > div {
+    border-style: solid;
+    border-width: 0px 0px 7px 10px;
+    border-color: transparent transparent #fff transparent;
+    margin-left: -9px;
+    padding-top: 5px;
+}
+
+#pmtalks dl > dd > div > p {
+    margin: -18px 0px 0px 15px;
+}
+
 dl > dd > div > .body {
     margin-left: 15px;
 }
@@ -47,13 +77,8 @@ dl > dd > p > a > img {
     height: auto !important;
 }
 `;
+    //transparent transparent #fff transparent
     document.body.append(style);
-    /*
-    <p style="margin-left:30px;">
-    <a href="/upimg/798696781a3f40f760bbe12739bdea75.png" target="_blank">
-    <img src="/upimg/798696781a3f40f760bbe12739bdea75.png" style="max-width: 200px; max-height: 200px; width: auto; height: auto;">
-
-    </a></p>*/
 
     /**************************************************/
     /**************************************************/
@@ -103,6 +128,7 @@ dl > dd > p > a > img {
     /**************************************************/
     /**************************************************/
     /* チャット送信処理 */
+    let refFlg = false;
     (textarea => {
         console.log("textarea", textarea);
         let isComposing = false;
@@ -112,6 +138,8 @@ dl > dd > p > a > img {
             if (e.key != "Enter") return;
             e.preventDefault();
             if (isComposing || !textarea.value.trim()) return;
+            if (refFlg) return;
+            refFlg = true;
             const form = new FormData();
             form.append("message", textarea.value.trim());
             form.append("valid", "1");
@@ -122,6 +150,7 @@ dl > dd > p > a > img {
             textarea.value = "";
             // await new Promise(r => setTimeout(r, 500));
             await ref();
+            refFlg = false;
         });
     })(document.querySelector("textarea"));
 
@@ -130,16 +159,26 @@ dl > dd > p > a > img {
     /* チャットリセット */
     body.talks.innerHTML = "";
 
+    /**************************************************/
+    /**************************************************/
+    /* 自分のUIDを取得 */
     const myUid = user_id.textContent;
+
+    /**************************************************/
+    /**************************************************/
+    /* ajax.phpを保持する変数 */
     let ajax = null;
 
-    document.getElementsByName("pmbtn")[0].addEventListener("click", e => {
+    /**************************************************/
+    /**************************************************/
+    /* 内緒ボタンを押した時のやつ */
+    const pmbtnClickAction = tUid => {
+        console.log("pmbtnClickAction");
         pm_box.style.display = "block";
         pmtalks.innerHTML = "";
         const pms = Object.values(ajax.pm);
-        const tUid = document.querySelector(".select").getAttribute("uid");
         for (const pm of pms) {
-            if (pm.uid !== tUid) continue;
+            if (pm.uid !== tUid && pm.uid !== myUid) continue;
             const talkChat = body.talkBaseChat.cloneNode(true);
             talkChat.id = pm.id;
             talkChat.classList.add(pm.icon);
@@ -149,12 +188,6 @@ dl > dd > p > a > img {
             const backgroundImage = getComputedStyle(talkChat.querySelector(".body")).backgroundImage;
             const style = talkChat.querySelector(".bubble").querySelector("div").style;
             style.backgroundImage = backgroundImage;
-            if (Math.floor(Math.random() * 2)) {
-                const bubble = talkChat.querySelector(".bubble");
-                const div = bubble.querySelector("div").querySelector("div");
-                const bp = "left -17px";
-                div.style.backgroundPosition = bp;
-            }
             const p = talkChat.querySelector(".body");
             const pt = parseInt(getComputedStyle(p).paddingTop);
             const pb = parseInt(getComputedStyle(p).paddingBottom);
@@ -162,32 +195,73 @@ dl > dd > p > a > img {
             const height = h + 30 + 8;
             const top = (Math.round((180 - height) / 2) + 23) * -1;
             style.backgroundPosition = "left " + top + "px";
+            const borderColor = getComputedStyle(p).borderColor;
+            talkChat.querySelector(".bubble").querySelector("div").style.borderColor = "transparent transparent " + borderColor + " transparent";
         }
+    };
+    document.getElementsByName("pmbtn")[0].addEventListener("click", e => {
+        pmbtnClickAction(document.querySelector(".select").getAttribute("uid"));
     });
+
     /**************************************************/
     /**************************************************/
     /* 画面をリフレッシュする関数 */
-    let refFlg = false;
+    const dtEAddEventListener = dtE =>
+        dtE.addEventListener("click", e => {
+            const name = "@" + e.target.textContent;
+            const messageE = document.querySelector('.inputarea [name="message"]');
+            if (messageE.value === "") {
+                messageE.value = name + " ";
+            } else if (/.+\s$/.test(messageE.value)) {
+                messageE.value += name;
+            } else {
+                messageE.value += " " + name;
+            }
+            messageE.focus();
+        });
+    let previousPm = null;
     const ref = async () => {
-        if (refFlg) return;
-        refFlg = true;
         ajax = await(await fetch("/ajax.php", {method:"post"})).json();
+        customAction(ajax);
         const users = Object.values(ajax.users);
         const talks = Object.values(ajax.talks);
+        const pms = Object.values(ajax.pm);
+        if (previousPm === null) {
+            if (pms.length === 0) {
+                previousPm = "";
+            } else {
+                previousPm = pms.slice(-1)[0];
+            }
+        }
+        let pm = null;
+        if (pms.length > 0) {
+            pm = pms.slice(-1)[0];
+        }
+        console.log(pms);
+        if (pm_box.style.display === "" && previousPm.id != pm.id) {
+            pmbtnClickAction(pm.uid);
+        }
+
         for (const talk of talks) {
             if (body.talks.querySelector("[id='" + talk.id + "']")) continue;
             if (talk.image) {
+                // 画像の作成処理
                 const talkImg = body.talkBaseImg.cloneNode(true);
                 talkImg.id = talk.id;
                 talkImg.classList.add(talk.icon);
                 talkImg.querySelector("dt").textContent = talk.name;
+                dtEAddEventListener(talkImg.querySelector("dt"));
+                talkImg.querySelector("a").href = talk.image;
+                talkImg.querySelector("a").target = "_blank";
                 talkImg.querySelector("img").src = talk.image;
                 body.talks.prepend(talkImg);
             } else if (talk.icon) {
+                // チャットの作成処理
                 const talkChat = body.talkBaseChat.cloneNode(true);
                 talkChat.id = talk.id;
                 talkChat.classList.add(talk.icon);
                 talkChat.querySelector("dt").textContent = talk.name;
+                dtEAddEventListener(talkChat.querySelector("dt"));
                 talkChat.querySelector(".body").textContent = talk.message;
                 body.talks.prepend(talkChat);
                 const backgroundImage = getComputedStyle(talkChat.querySelector(".body")).backgroundImage;
@@ -207,6 +281,7 @@ dl > dd > p > a > img {
                 const top = (Math.round((180 - height) / 2) + 23) * -1;
                 style.backgroundPosition = "left " + top + "px";
             } else {
+                // システムチャットの作成処理
                 const talkSys = body.talkBaseSys.cloneNode(true);
                 talkSys.id = talk.id;
                 talkSys.textContent = talk.message;
@@ -242,7 +317,6 @@ dl > dd > p > a > img {
                 userE.remove();
             }
         }
-        refFlg = false;
     };
 
     /**************************************************/
@@ -254,7 +328,10 @@ dl > dd > p > a > img {
     /**************************************************/
     /* 5秒ごとに画面をリフレッシュ */
     while (true) {
+        if (refFlg) return;
+        refFlg = true;
         await ref();
+        refFlg = false;
         await new Promise(r => setTimeout(r, 5000));
     }
 })();
