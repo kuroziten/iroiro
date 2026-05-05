@@ -42,6 +42,10 @@ dl p.body {
     width: 100%;
     height: calc(100vh - 138px);
     background-color: red;
+    position: fixed;
+    width: 50%;
+    overflow: scroll;
+    right: 0;
 }
 [name] {
     display: flex;
@@ -140,10 +144,58 @@ dl p.body {
 
     const open = XMLHttpRequest.prototype.open;
 
+    /**
+ * 直近24時間以内に更新されたレコードを、見つけた順に即座にUIへ反映する
+ */
+    async function processRecentRecords() {
+        const db = await openDB();
+        const transaction = db.transaction([STORE_NAME], "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const index = store.index("updateIndex");
+
+        // 24時間前の時刻
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+        // 24時間前〜現在までの範囲（新しいもの）
+        const range = IDBKeyRange.lowerBound(twentyFourHoursAgo);
+
+        // 新しい順（降順）で回す
+        const request = index.openCursor(range, "prev");
+
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                const data = cursor.value;
+
+                // 配列に入れず、この場で INFO 内のユーザーを画面に出す
+                for (const name of Object.keys(data.INFO)) {
+                    const userDetail = data.INFO[name];
+                    // 画面更新用の関数を直接叩く
+                    // 第3引数は Date オブジェクトに戻して渡す
+                    addView(data.ENCIP, name, new Date(userDetail.UPDT_DATE), true);
+                }
+
+                // 次のレコードへ（配列を介さないのでここでループ）
+                cursor.continue();
+            } else {
+                console.log("直近24時間のデータ処理がすべて完了しました");
+            }
+        };
+
+        request.onerror = (event) => {
+            console.error("検索失敗:", event.target.error);
+        };
+    }
+
     XMLHttpRequest.prototype.open = function(method, url) {
-        this.addEventListener('load', function() {
+        this.addEventListener('load', async function() {
             if (url === 'https://drrrkari.com/ajax.php') {
-                main(JSON.parse(this.responseText));
+                console.log("main開始");
+                await main(JSON.parse(this.responseText));
+                console.log("main終了");
+                console.log("processRecentRecords開始");
+                await processRecentRecords();
+                console.log("processRecentRecords終了");
             }
         });
         open.apply(this, arguments);
@@ -287,16 +339,16 @@ dl p.body {
     //         console.log("最新更新順:", res3);
     //     })();
 
+
     async function main(obj) {
         // ユーザーを取得する
         const updtDate = new Date();
         for (const user of Object.values(obj.users)) {
             const encip = user.encip.slice(0, 5);
             const name = user.name;
+            console.log("追加開始", encip, name);
             await upsertRecord(encip, name);
-            const res1 = await getByEncip(encip);
-            addView(encip, name, updtDate, true);
-            console.log("res1", res1);
+            console.log("追加完了", encip, name);
         }
     }
 })();
