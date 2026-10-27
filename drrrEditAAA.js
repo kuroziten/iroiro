@@ -48,6 +48,12 @@ style.textContent = `
   opacity: .5;
   transition: all 3000ms;
 }
+.message {
+  border: none;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
 `;
 // filter: blur(-0.9rem);
 // 新画面
