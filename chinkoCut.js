@@ -11,7 +11,7 @@
         constructor(parent) {
           this.parent = parent;
         };
-        大きさ = 14
+        大きさ = 12
       }(this);
       を = new class {
         constructor(parent) {
